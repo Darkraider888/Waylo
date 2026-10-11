@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propose a trip | Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/organizer.css}">
+<link rel="stylesheet" th:href="@{/css/trip-community.css}">
+<script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('proposals')}"></header>
+<main class="community-page">
+<a class="community-back" th:href="@{/trip-proposals}">← My trip proposals</a>
+<div class="community-title"><span class="eyebrow">ONE TRIP. YOUR RESPONSIBILITY.</span>
+<h1>Organize one trip.</h1><p>Anyone with a Waylo account can propose a particular journey. A Platform Admin reviews it. Approval gives you access to manage <strong>that trip only</strong>; it does not change your account into a global Trip Manager.</p></div>
+<div th:if="${error}" class="alert alert-error" role="alert" th:text="${error}"></div>
+<form class="community-form" th:action="@{/trip-proposals/apply}" th:object="${proposalRequest}" method="post">
+  <div class="community-form-grid">
+    <div><label for="title">Trip title</label><input id="title" th:field="*{title}" minlength="8" maxlength="200" required placeholder="A weekend in Sreemangal">
+      <p class="form-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p></div>
+    <div><label for="destinationId">Destination</label><select id="destinationId" th:field="*{destinationId}" required>
+      <option value="">Choose a destination</option><option th:each="place : ${destinations}" th:value="${place.id}" th:text="${place.name + ' — ' + (place.district != null ? place.district : place.location)}">Destination</option>
+    </select><p class="form-error" th:if="${#fields.hasErrors('destinationId')}" th:errors="*{destinationId}"></p></div>
+  </div>
+  <label for="description">Itinerary and trip plan</label>
+  <textarea id="description" rows="6" th:field="*{description}" minlength="30" maxlength="5000" required placeholder="Meeting point, transportation, itinerary, accommodation, safety arrangements, and what's included..."></textarea>
+  <p class="form-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+  <div class="community-form-grid three">
+    <div><label for="departureDate">Departure date/time (Bangladesh)</label><input id="departureDate" type="datetime-local" th:field="*{departureDate}" required>
+      <p class="form-error" th:if="${#fields.hasErrors('departureDate')}" th:errors="*{departureDate}"></p></div>
+    <div><label for="price">Price per person (BDT)</label><input id="price" type="number" th:field="*{price}" min="10" step="0.01" required>
+      <p class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></p></div>
+    <div><label for="capacity">Seats</label><input id="capacity" type="number" th:field="*{capacity}" min="1" max="1000" required>
+      <p class="form-error" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></p></div>
+  </div>
+  <label for="motivation">Your planning experience and why you should lead this trip</label>
+  <textarea id="motivation" rows="5" th:field="*{motivation}" minlength="30" maxlength="1500" required placeholder="Explain your experience, safety planning, traveler support, and how you will run this particular trip."></textarea>
+  <p class="form-error" th:if="${#fields.hasErrors('motivation')}" th:errors="*{motivation}"></p>
+  <label for="documentType">Document type available for manual review</label>
+  <select id="documentType" th:field="*{documentType}" required><option value="">Select document type</option><option value="NID">National ID (NID)</option><option value="PASSPORT">Passport</option></select>
+  <p class="form-error" th:if="${#fields.hasErrors('documentType')}" th:errors="*{documentType}"></p>
+  <div class="community-notice"><strong>Important:</strong> This demo collects <em>document type only</em>—no NID number, photo, or passport scan. An admin still needs a real secure off-platform verification process before making actual identity claims.</div>
+  <button class="community-primary" type="submit">Submit for admin review →</button>
+</form></main></body></html>

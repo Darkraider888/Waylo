@@ -1,0 +1,65 @@
+HELP.md
+target/
+
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# Local credentials, user media and repair snapshots
+.env
+.env.*
+!.env.example
+repair-backups/
+waylo-uploads/
+hs_err_pid*.log
+replay_pid*.log
+*.jfr
+
+# Private application configuration
+application-local.properties
+application-secrets.properties
+application-private.yml
+application-private.yaml
+
+# Credentials and certificates
+*.pem
+*.p12
+*.pfx
+*.jks
+
+# Local logs and database backups
+*.log
+*.bak
+*.sql.gz
+*.sql.zip
+
+# Operating system
+.DS_Store
+Thumbs.db

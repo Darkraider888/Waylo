@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My trip proposals | Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}"><link rel="stylesheet" th:href="@{/css/social.css}">
+<link rel="stylesheet" th:href="@{/css/trip-community.css}"><script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('proposals')}"></header>
+<main class="community-page"><div class="community-page-head"><div><span class="eyebrow">YOUR PROPOSALS</span><h1>Trips you want to lead.</h1>
+<p>Each approval is limited to its linked trip. You do not receive global Trip Manager permissions.</p></div>
+<a class="community-primary" th:href="@{/trip-proposals/apply}">+ Propose a trip</a></div>
+<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+<div class="community-empty" th:if="${#lists.isEmpty(proposals)}"><h2>Have a trip idea?</h2><p>Plan a route, set a fair price and send it for Platform Admin review.</p></div>
+<div class="community-cards"><article class="community-card" th:each="proposal : ${proposals}">
+<div class="community-card-head"><span class="eyebrow" th:text="${proposal.destination.name}">Destination</span><span class="status-pill" th:text="${proposal.status}">PENDING</span></div>
+<h2 th:text="${proposal.title}">Trip name</h2><p th:text="${#temporals.format(proposal.departureDate, 'dd MMM yyyy · HH:mm')}">Departure</p>
+<p th:if="${proposal.status.name() == 'PENDING'}">Awaiting a Platform Admin's manual review.</p>
+<p th:if="${proposal.status.name() == 'REJECTED'}" th:text="${proposal.rejectionReason}">Rejection reason</p>
+<a th:if="${proposal.approvedTrip != null}" class="community-primary" th:href="@{/organizer/trips/{id}/edit(id=${proposal.approvedTrip.id})}">Manage your approved draft →</a>
+</article></div></main></body></html>

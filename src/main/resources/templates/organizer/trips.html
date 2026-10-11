@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trip Manager | Waylo</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/social.css}">
+    <link rel="stylesheet" th:href="@{/css/trip-public.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+    <link rel="stylesheet" th:href="@{/css/trip-cover-manager.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app">
+<header th:replace="~{fragments/nav :: navbar('explore')}"></header>
+
+<main class="public-trips">
+    <div class="explore-heading wl-manager-heading">
+        <div>
+            <span class="eyebrow">TRIP MANAGER</span>
+            <h1>Your journeys, organized.</h1>
+            <p>Create a draft, review everything, then publish for travelers.</p>
+        </div>
+        <a class="action-primary" th:if="${canCreateTrips}"
+           th:href="@{/organizer/trips/new}">+ Create a trip</a>
+        <a class="outline-button" th:unless="${canCreateTrips}"
+           th:href="@{/trip-proposals/apply}">+ Propose another trip</a>
+    </div>
+
+    <div class="alert alert-success" th:if="${success}" th:text="${success}" role="status"></div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}" role="alert"></div>
+
+    <div class="empty-trip" th:if="${#lists.isEmpty(trips)}">
+        <h2>Your first trip starts here.</h2>
+        <p>Choose a destination, set the date and price, and save a draft.</p>
+    </div>
+
+    <section class="trip-grid" aria-label="Your trips">
+        <article class="trip-card" th:each="trip : ${trips}">
+            <div class="trip-cover">
+                <img th:if="${trip.coverImageUrl != null and !#strings.isEmpty(trip.coverImageUrl)}"
+                     th:src="${trip.coverImageUrl}" th:alt="${'Cover of ' + trip.title}" loading="lazy">
+                <div th:unless="${trip.coverImageUrl != null and !#strings.isEmpty(trip.coverImageUrl)}"
+                     class="trip-cover-placeholder" aria-label="No cover photo yet">⌖</div>
+                <span class="trip-cover-label" th:text="${trip.status}">DRAFT</span>
+            </div>
+
+            <div class="trip-card-body">
+                <span class="trip-location" th:text="${trip.destination.name}">Location</span>
+                <h2 th:text="${trip.title}">Trip</h2>
+                <p class="trip-description" th:text="${trip.description}">Description</p>
+                <div class="trip-meta">
+                    <span th:text="${#temporals.format(trip.departureDate,'dd MMM yyyy')}">Date</span>
+                    <span th:text="${trip.capacity} + ' seats'">Seats</span>
+                </div>
+                <div class="trip-card-footer">
+                    <div class="trip-price"><span th:text="'৳' + ${trip.price}">Price</span></div>
+                    <a th:if="${trip.status.name() == 'DRAFT'}" class="trip-cta"
+                       th:href="@{/organizer/trips/{id}/edit(id=${trip.id})}">Edit draft</a>
+                    <a th:if="${trip.status.name() == 'PUBLISHED'}" class="trip-cta"
+                       th:href="@{/trips/{id}(id=${trip.id})}">View trip</a>
+                </div>
+
+                <details th:if="${trip.status.name() == 'DRAFT' or trip.status.name() == 'PUBLISHED'}"><summary>Change trip status</summary><form method="post" th:action="@{/organizer/trips/{id}/status(id=${trip.id})}"><label>Reason<textarea name="reason" minlength="10" maxlength="450" required></textarea></label><button type="submit" name="cancel" value="true">Cancel trip</button><button type="submit" name="cancel" value="false">Mark completed after departure</button><p>Cancellation closes booking and group access. Payment records are preserved; refunds require separate verified reconciliation.</p></form></details>
+                <!-- This form changes ONLY the Cloudinary cover, not trip status/details. -->
+                <form th:if="${trip.status.name() == 'DRAFT' or trip.status.name() == 'PUBLISHED'}"
+                      class="wl-cover-upload"
+                      th:action="@{/organizer/trips/{id}/cover(id=${trip.id})}"
+                      method="post" enctype="multipart/form-data">
+                    <label th:for="${'wlCoverFile-' + trip.id}"
+                           th:text="${trip.coverImageUrl == null ? 'Add trip cover photo' : 'Replace trip cover photo'}">
+                        Add trip cover photo
+                    </label>
+                    <input th:id="${'wlCoverFile-' + trip.id}" type="file" name="coverPhoto"
+                           accept="image/jpeg,image/png" required>
+                    <button class="wl-cover-upload-btn" type="submit">Upload cover</button>
+                    <small>JPEG/PNG, up to 6 MB · Stored in Cloudinary</small>
+                </form>
+
+                <a th:if="${trip.status.name() == 'PUBLISHED'}" class="outline-button"
+                   th:href="@{/groups/trips/{id}(id=${trip.id})}">Manage private trip group →</a>
+                <form th:if="${trip.status.name() == 'DRAFT'}"
+                      th:action="@{/organizer/trips/{id}/publish(id=${trip.id})}"
+                      method="post" class="publish-form">
+                    <button class="outline-button" type="submit">Publish trip →</button>
+                </form>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

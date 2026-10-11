@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"><body>
+<header th:fragment="navbar(active)" class="app-header">
+    <div class="app-header-inner">
+        <a class="brand" th:href="@{/feed}" aria-label="Waylo home">waylo<span>...</span></a>
+        <button type="button" class="mobile-menu-toggle" aria-controls="main-navigation" aria-expanded="false">Menu</button><nav id="main-navigation" class="app-header-links" aria-label="Main navigation">
+            <a th:href="@{/feed}" th:classappend="${active == 'feed'} ? 'current' : ''">Feed</a>
+            <a th:href="@{/trips}" th:classappend="${active == 'explore'} ? 'current' : ''">Explore</a>
+            <a th:if="${loggedIn}" th:href="@{/profile}" th:classappend="${active == 'profile'} ? 'current' : ''">Profile</a>
+            <a th:if="${loggedIn}" th:href="@{/notifications}">Updates</a><a th:if="${loggedIn}" th:href="@{/saved}">Saved</a>
+            <a th:if="${loggedIn}" th:href="@{/bookings}" th:classappend="${active == 'bookings'} ? 'current' : ''">My Bookings</a>
+            <a th:if="${loggedIn}" th:href="@{/trip-proposals}" th:classappend="${active == 'proposals'} ? 'current' : ''">Organize 1 Trip</a>
+            <a th:if="${canManageTrips}" th:href="@{/organizer/trips}">Manage Trips</a>
+            <a th:if="${isAdmin}" th:href="@{/admin/dashboard}">Admin</a>
+        </nav>
+        <form class="header-search" th:action="@{/search}" method="get" role="search">
+            <svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#search}"></use></svg>
+            <input type="search" name="q" maxlength="80" placeholder="Search places, trips, people" aria-label="Search Waylo" th:value="${query}">
+            <button type="submit" aria-label="Search">Go</button>
+        </form>
+        <div class="header-actions">
+            <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+                <span data-theme-icon aria-hidden="true">☾</span><span data-theme-label>Dark mode</span>
+            </button>
+            <a th:if="${loggedIn}" class="header-create" th:href="@{/posts/new}">+ Post</a>
+            <a th:unless="${loggedIn}" class="header-create" th:href="@{/login}">Log in</a>
+            <form th:if="${loggedIn}" th:action="@{/logout}" method="post"><button type="submit" class="header-logout">Log out</button></form>
+        </div>
+    </div>
+</header>
+</body></html>

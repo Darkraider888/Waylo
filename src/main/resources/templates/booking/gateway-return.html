@@ -1,0 +1,13 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sandbox Payment Response | Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/trip-public.css}">
+<script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('bookings')}"></header>
+<main class="public-trips"><article class="booking-receipt">
+  <span class="booking-sandbox-label">SSLCommerz SANDBOX</span>
+  <h1>Payment response received</h1>
+  <p th:text="${gatewayMessage}">Check your booking for confirmed status.</p>
+  <p class="result-count">This page alone does not confirm payment. Waylo confirms only after independently validating the gateway transaction.</p>
+  <a class="trip-cta" th:href="@{/bookings}">View My Bookings →</a>
+</article></main></body></html>

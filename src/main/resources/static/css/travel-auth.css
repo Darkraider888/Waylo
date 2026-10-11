@@ -1,0 +1,268 @@
+/* WAYLO DESTINATION AUTHENTICATION */
+
+.entry-page .navbar {
+    padding: 18px 4%;
+    min-height: 76px;
+}
+
+.entry-layout {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.3fr)
+        minmax(390px, 1fr);
+    align-items: stretch;
+    max-width: none;
+    margin: auto;
+    padding: 0;
+    gap: 0;
+}
+
+.destination-stage {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100vh - 116px);
+    padding: clamp(26px, 4vw, 60px);
+    background-color: #234638;
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+}
+
+.destination-stage[data-current="sreemangal"] {
+    background-image: url('/images/sreemangal.jpg');
+}
+
+.destination-stage[data-current="chattogram"] {
+    background-image: url('/images/chattogram.jpg');
+}
+
+.destination-stage[data-current="coxs-bazar"] {
+    background-image: url('/images/coxs-bazar.jpg');
+}
+
+.destination-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background: linear-gradient(
+            180deg,
+            rgba(6, 28, 25, .42),
+            rgba(6, 28, 25, .03) 46%,
+            rgba(6, 28, 25, .74)
+    );
+}
+
+.travel-kicker {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    font-weight: 800;
+}
+
+.travel-intro h2 {
+    max-width: 620px;
+    margin: 20px 0;
+    color: #fff;
+    font-family: Georgia, serif;
+    font-size: clamp(35px, 4.3vw, 64px);
+    line-height: 1.07;
+    letter-spacing: -1.8px;
+}
+
+.travel-intro h2 em {
+    color: #a6ecd5;
+    font-style: normal;
+}
+
+.travel-intro p {
+    color: #f0f6f2;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.destination-bottom {
+    margin-top: 70px;
+}
+
+.destination-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.destination-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.place-card {
+    position: relative;
+    display: block;
+    height: 190px;
+    overflow: hidden;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: #163c31;
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 6px 24px #0003;
+}
+
+.place-card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .2s;
+}
+
+.place-card:hover img {
+    transform: scale(1.04);
+}
+
+.place-card[aria-pressed="true"] {
+    border-color: #a6ecd5;
+}
+
+.place-caption {
+    position: absolute;
+    inset: auto 0 0;
+    padding: 28px 12px 14px;
+
+    background: linear-gradient(
+            transparent,
+            rgba(0, 22, 15, .95)
+    );
+}
+
+.place-caption strong {
+    display: block;
+    color: #fff;
+    font-size: 14px;
+}
+
+.place-caption small {
+    display: block;
+    margin-top: 5px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.photo-credits {
+    max-width: 520px;
+    margin-top: 17px;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.photo-credits summary {
+    width: max-content;
+    cursor: pointer;
+}
+
+.photo-credits a {
+    text-decoration: underline;
+}
+
+.photo-credits[open] {
+    padding: 12px;
+    border-radius: 8px;
+    background: #102a24e8;
+}
+
+.entry-page .auth-container {
+    max-width: 570px;
+    margin: auto;
+    padding: 36px clamp(26px, 4vw, 64px);
+}
+
+.entry-page .auth-heading h1 {
+    font-family: Georgia, serif;
+    font-size: 36px;
+    letter-spacing: -1px;
+}
+
+.entry-page .auth-heading p {
+    font-size: 14px;
+}
+
+.entry-footer {
+    margin: 0;
+    padding: 12px;
+    background: var(--surface);
+}
+
+@media (min-width: 1000px) {
+    .entry-page .auth-heading {
+        margin-bottom: 25px;
+    }
+
+    .entry-page .form-group {
+        margin-bottom: 18px;
+    }
+}
+
+@media (max-width: 820px) {
+    .entry-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .destination-stage {
+        min-height: 480px;
+        padding: 28px;
+    }
+
+    .destination-bottom {
+        margin-top: 30px;
+    }
+
+    .place-card {
+        height: 130px;
+    }
+
+    .entry-page .auth-container {
+        width: 100%;
+        max-width: 520px;
+        padding: 36px 24px;
+    }
+}
+
+@media (max-width: 420px) {
+    .destination-stage {
+        padding: 20px;
+    }
+
+    .destination-cards {
+        gap: 7px;
+    }
+
+    .place-caption {
+        padding: 24px 7px 10px;
+    }
+
+    .place-caption strong {
+        font-size: 12px;
+    }
+
+    .place-caption small {
+        font-size: 9px;
+    }
+
+    .travel-intro h2 {
+        font-size: 36px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .place-card img {
+        transition: none;
+    }
+}

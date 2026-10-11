@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trip details & booking | Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/trip-public.css}">
+<script th:src="@{/js/theme.js}" defer></script><script th:src="@{/js/booking.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('explore')}"></header>
+<main class="public-trips detail-page">
+  <a class="backlink" th:href="@{/trips}">← Explore trips</a>
+  <div class="detail-cover"><img th:if="${trip.coverImageUrl != null}" th:src="${trip.coverImageUrl}" alt="Trip cover photograph">
+    <div class="trip-cover-placeholder" th:unless="${trip.coverImageUrl != null}"><svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#compass}"></use></svg></div></div>
+  <div class="trip-detail-grid">
+    <section class="trip-detail-main">
+      <span class="eyebrow" th:text="${trip.destination.name}">Destination</span>
+      <h1 th:text="${trip.title}">Trip name</h1>
+      <div class="trip-organizer">Hosted by <a th:href="@{/profile/{id}(id=${trip.organizer.id})}" th:text="${trip.organizer.fullName}">Trip Manager</a></div>
+      <h2>About this journey</h2><p class="trip-detail-description" th:text="${trip.description}">Description</p>
+      <a th:if="${trip.destination.latitude != null and trip.destination.longitude != null}"
+         class="backlink" target="_blank" rel="noopener noreferrer"
+         th:href="${'https://www.google.com/maps/search/?api=1&amp;query=' + trip.destination.latitude + ',' + trip.destination.longitude}">Open destination in Google Maps ↗</a>
+    </section>
+    <aside class="trip-booking-panel">
+      <span class="booking-sandbox-label">SSLCommerz sandbox · Test payments only</span>
+      <div class="trip-price"><span th:text="'৳' + ${trip.price}">৳0</span><small>per person</small></div>
+      <dl><dt>Departure</dt><dd th:text="${#temporals.format(trip.departureDate,'dd MMM yyyy · HH:mm')}">Date</dd>
+        <dt>Seats available</dt><dd th:text="${availableSeats} + ' of ' + ${trip.capacity}">Seats</dd></dl>
+      <div th:if="${bookingError}" class="alert alert-error" role="alert" th:text="${bookingError}"></div>
+      <div th:if="${departed}" class="booking-notice"><strong>This trip has departed.</strong><p>New reservations are closed.</p></div>
+      <div th:if="${availableSeats <= 0 and !departed}" class="booking-notice"><strong>Currently full.</strong><p>All seats are confirmed or temporarily held during checkout.</p></div>
+      <div th:if="${availableSeats > 0 and !checkoutReady and !departed}" class="booking-notice"><strong>Sandbox checkout not configured yet.</strong>
+        <p>Once your SSLCommerz sandbox credentials and public HTTPS callback URL are configured, you can test seat reservations here. No payment is collected now.</p></div>
+      <a th:if="${availableSeats > 0 and !signedIn and !departed}" class="trip-cta" th:href="@{/login}">Log in to reserve →</a>
+      <form th:if="${availableSeats > 0 and signedIn and !departed}" class="booking-form"
+            th:action="@{/trips/{id}/book(id=${trip.id})}" method="post"
+            th:attr="data-price=${trip.price}">
+        <h2>Reserve your seat</h2>
+        <div class="booking-fields"><label for="seats">Seats</label><select id="seats" name="seats" required>
+          <option th:each="count : ${seatOptions}" th:value="${count}" th:text="${count}">1</option></select></div>
+        <div class="booking-fields"><label for="advancePercent">Pay now</label><select id="advancePercent" name="advancePercent">
+          <option value="10">10% advance</option><option value="25">25% advance</option><option value="50">50% advance</option>
+          <option value="75">75% advance</option><option value="100">100% full payment</option></select></div>
+        <div class="booking-calculation" aria-live="polite">
+          <div><span>Trip total</span><strong id="tripTotal">—</strong></div>
+          <div><span>Advance today</span><strong id="advanceAmount">—</strong></div>
+          <div><span>Waylo fee (1% of payment)</span><strong id="platformFee">—</strong></div>
+          <div class="calculation-total"><span>Sandbox payment</span><strong id="paymentDue">—</strong></div>
+          <p>Final amounts are recalculated on the server. You can pay the remaining trip balance from My Bookings after the first payment has been verified.</p>
+        </div>
+        <h3>Billing contact for sandbox checkout</h3>
+        <label for="phone">Phone</label><input id="phone" name="phone" maxlength="20" autocomplete="tel" placeholder="01XXXXXXXXX" required>
+        <label for="address">Address</label><input id="address" name="address" maxlength="50" autocomplete="street-address" required>
+        <div class="booking-two"><div><label for="city">City</label><input id="city" name="city" maxlength="50" autocomplete="address-level2" required></div>
+          <div><label for="postcode">Postcode</label><input id="postcode" name="postcode" maxlength="15" autocomplete="postal-code" required></div></div>
+        <button type="submit" class="trip-cta" th:disabled="${!checkoutReady}">Continue to sandbox payment →</button>
+        <p class="sandbox-disclaimer">30-minute temporary seat hold. Reservation confirmed only after independent gateway validation. No real money moves in sandbox.</p>
+      </form>
+      <a class="booking-history-link" th:if="${signedIn}" th:href="@{/bookings}">View My Bookings →</a>
+      <a class="trip-cta" th:if="${groupAccess}" th:href="@{/groups/trips/{id}(id=${trip.id})}">Open private trip group →</a>
+    </aside>
+  </div>
+</main></body></html>

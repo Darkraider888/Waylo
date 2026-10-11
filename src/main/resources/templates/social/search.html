@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Search Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/trip-public.css}">
+<script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('search')}"></header>
+<main class="public-trips search-results">
+<span class="eyebrow">WAYLO SEARCH</span><h1>Find places, trips and people.</h1>
+<form method="get" class="explore-search" th:action="@{/search}" role="search">
+  <div class="search-field"><svg class="wa-icon"><use th:href="@{/icons/waylo.svg#search}"></use></svg>
+  <input name="q" type="search" maxlength="80" th:value="${query}" placeholder="e.g. Sreemangal" aria-label="Search places, trips and profiles" required></div>
+  <button class="action-primary" type="submit">Search</button>
+</form>
+<p th:if="${query == ''}" class="result-count">Search by destination, published trip title, or traveler name.</p>
+<div th:if="${query != ''}">
+<section class="search-section"><h2>Published trips</h2>
+  <p class="result-count" th:if="${#lists.isEmpty(trips)}">No matching published trips.</p>
+  <div class="search-result" th:each="trip : ${trips}"><a th:href="@{/trips/{id}(id=${trip.id})}" th:text="${trip.title}">Trip</a>
+    <p th:text="${trip.destination.name} + ' · ৳' + ${trip.price}">Location</p></div>
+</section>
+<section class="search-section"><h2>Travelers</h2><p class="result-count" th:if="${#lists.isEmpty(people)}">No matching public profiles.</p>
+  <div class="search-result" th:each="person : ${people}"><a th:href="@{/profile/{id}(id=${person.id})}" th:text="${person.fullName}">Traveler</a>
+    <p th:if="${person.profileLocation != null}" th:text="${person.profileLocation}">Location</p></div>
+</section>
+<section class="search-section"><h2>Destinations</h2><p class="result-count" th:if="${#lists.isEmpty(destinations)}">No matching destinations.</p>
+  <div class="search-result" th:each="destination : ${destinations}"><a th:href="@{/trips(destinationId=${destination.id})}" th:text="${destination.name}">Destination</a>
+    <p th:text="${destination.district}">District</p></div>
+</section>
+</div>
+</main></body></html>

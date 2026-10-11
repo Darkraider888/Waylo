@@ -1,0 +1,27 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Destinations | Waylo Admin</title><link rel="stylesheet" th:href="@{/css/auth.css}">
+<link rel="stylesheet" th:href="@{/css/theme.css}"><link rel="stylesheet" th:href="@{/css/social.css}">
+<link rel="stylesheet" th:href="@{/css/admin.css}"><script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('admin')}"></header>
+<main class="admin-page"><a class="backlink" th:href="@{/admin/dashboard}">← Admin dashboard</a>
+    <span class="eyebrow">WAYLO PLATFORM</span><h1>Manage destinations.</h1>
+    <p class="muted">Locations remain in MySQL. Destinations used by trips cannot be deleted.</p>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+    <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+    <div class="admin-application"><h2>All destinations</h2>
+        <div class="destination-row" th:each="d : ${destinations}">
+            <div><b th:text="${d.name}">Place</b>
+                <p class="muted" th:text="${(d.district != null ? d.district : d.location) + (d.country != null ? ', ' + d.country : '')}">Location</p>
+            </div>
+            <details><summary>Edit destination</summary><form method="post" enctype="multipart/form-data" th:action="@{/admin/destinations/{id}/edit(id=${d.id})}">
+            <label>Name<input name="name" maxlength="150" required th:value="${d.name}"></label><label>District<input name="district" maxlength="120" required th:value="${d.district}"></label><label>Country<input name="country" maxlength="120" required th:value="${d.country}"></label><label>Description<textarea name="description" maxlength="3000" th:text="${d.description}"></textarea></label><label>Latitude<input name="latitude" type="number" step="0.0000001" min="-90" max="90" th:value="${d.latitude}"></label><label>Longitude<input name="longitude" type="number" step="0.0000001" min="-180" max="180" th:value="${d.longitude}"></label><label>Public destination photo<input type="file" name="photo" accept="image/jpeg,image/png"></label><button type="submit">Save destination</button></form></details>
+            <form th:action="@{/admin/destinations/{id}/delete(id=${d.id})}" method="post"
+                  onsubmit="return confirm('Delete this location? Trips using it will prevent deletion.');">
+                <button class="outline-button" type="submit">Delete</button>
+            </form>
+        </div>
+        <p th:if="${#lists.isEmpty(destinations)}" class="muted">No destinations yet.</p>
+    </div>
+    <a class="action-primary" th:href="@{/organizer/trips/new}">+ Create destination in trip editor</a>
+</main></body></html>

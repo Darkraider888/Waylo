@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saved stories | Waylo</title><link rel="stylesheet" th:href="@{/css/auth.css}">
+<link rel="stylesheet" th:href="@{/css/theme.css}"><link rel="stylesheet" th:href="@{/css/social.css}">
+<script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('saved')}"></header>
+<main class="edit-shell"><span class="eyebrow">YOUR COLLECTION</span><h1>Saved stories</h1>
+    <p class="muted">Only you can see your saved posts.</p>
+    <div th:if="${posts.empty}" class="social-empty"><h2>Nothing saved yet.</h2><p>Save a story from the feed to keep it here.</p></div>
+    <div class="saved-list"><article class="saved-card" th:each="card : ${posts.content}">
+        <img th:if="${card.post.imageUrl != null}" th:src="${card.post.imageUrl}" alt="Travel photograph">
+        <div><a th:href="@{/profile/{id}(id=${card.post.user.id})}" th:text="${card.post.user.fullName}">Traveler</a>
+            <p th:text="${card.post.caption}">Travel story</p><a th:href="@{/posts/{id}(id=${card.post.id})}">View post →</a>
+        </div></article></div>
+    <nav class="social-pagination" th:if="${posts.totalPages > 1}">
+        <a th:if="${posts.hasPrevious()}" th:href="@{/saved(page=${posts.number-1})}">← Previous</a>
+        <span th:text="'Page ' + ${posts.number+1} + ' / ' + ${posts.totalPages}"></span>
+        <a th:if="${posts.hasNext()}" th:href="@{/saved(page=${posts.number+1})}">Next →</a>
+    </nav>
+</main></body></html>

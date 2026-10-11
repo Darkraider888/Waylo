@@ -1,0 +1,96 @@
+.admin-page { max-width: 1050px; padding: 45px 22px 80px; margin: 0 auto; color: var(--text); }
+.admin-page-top { display: block; margin-bottom: 24px; }
+.admin-page-intro { min-width: 0; }
+.admin-page h1 { font-size: clamp(29px,4vw,44px); color: var(--text); letter-spacing: -1.2px; margin: 9px 0; }
+.admin-page h2 { color: var(--text); margin: 30px 0 18px; }
+.admin-page-top p { font-size: 13px; color: var(--muted); }
+.admin-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.admin-stats > div,.admin-application,.admin-empty { border: 1px solid var(--border); border-radius: 15px; padding: 21px; background: var(--surface); color: var(--text); }
+.admin-stats span { font-size: 12px; color: var(--muted); display: block; }
+.admin-stats b { display: block; margin-top: 12px; font-size: 36px; color: #168c78; }
+.admin-stats .small-number { font-size: 15px; }
+.admin-application { margin-bottom: 18px; }
+.admin-application-header { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.admin-application h3 { font-size: 20px; color: var(--text); margin: 7px 0 20px; }
+.admin-pill { padding: 7px 11px; border-radius: 25px; background: var(--green-light); color: var(--text); height: fit-content; font-size: 11px; font-weight: 800; }
+.admin-metadata { display: grid; grid-template-columns: 165px minmax(0,1fr); gap: 10px 16px; font-size: 13px; }
+.admin-metadata dt { color: var(--muted); }
+.admin-metadata dd { color: var(--text); margin: 0; overflow-wrap: anywhere; }
+.admin-metadata .prewrap { white-space: pre-wrap; }
+.admin-warning { margin: 18px 0; padding: 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 12px; line-height: 1.6; color: var(--muted); background: var(--background); }
+.admin-empty { color: var(--muted); }
+.review-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.review-actions form { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; margin: 0; }
+.review-actions label { font-weight: 800; color: var(--text); font-size: 12px; }
+.review-actions textarea { width: 100%; padding: 12px; font: inherit; color: var(--text); background: var(--field); border: 1px solid var(--border); border-radius: 9px; }
+.review-actions button { cursor: pointer; }
+@media(max-width:700px) { .admin-page-top { display: block; } .admin-stats,.review-actions { grid-template-columns: 1fr; } .admin-metadata { grid-template-columns: 1fr; gap: 5px; } .admin-metadata dd { margin-bottom: 10px; } }
+.destination-row { display: flex; justify-content: space-between; align-items: center; gap: 18px; border-bottom: 1px solid var(--border); padding: 14px 0; }
+.destination-row p { margin: 5px 0 0; font-size: 12px; }
+.destination-row form { margin: 0; }
+
+
+/* Admin dashboard shortcuts: accessible, real links, responsive in both themes. */
+.admin-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0 0 32px;
+}
+.admin-quick-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-width: 0;
+    min-height: 104px;
+    padding: 19px 21px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color .18s ease, background-color .18s ease, transform .18s ease;
+}
+.admin-quick-link:hover {
+    border-color: var(--green);
+    background: var(--green-light);
+    transform: translateY(-1px);
+}
+.admin-quick-link:focus-visible {
+    outline: 3px solid var(--green);
+    outline-offset: 3px;
+}
+.admin-quick-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+.admin-quick-copy strong {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+.admin-quick-copy small {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+.admin-quick-arrow {
+    color: var(--green);
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1;
+    flex-shrink: 0;
+}
+@media(max-width:700px) {
+    .admin-quick-actions { grid-template-columns: 1fr; gap: 11px; }
+    .admin-quick-link { min-height: 82px; padding: 15px 17px; }
+}
+@media(prefers-reduced-motion:reduce) {
+    .admin-quick-link { transition: none; }
+    .admin-quick-link:hover { transform: none; }
+}

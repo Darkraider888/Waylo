@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Private Trip Group | Waylo</title>
+  <link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}"><link rel="stylesheet" th:href="@{/css/social.css}">
+  <link rel="stylesheet" th:href="@{/css/trip-community.css}">
+  <script th:src="@{/js/theme.js}" defer></script><script th:src="@{/js/trip-chat.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('groups')}"></header>
+<main class="community-page group-page">
+  <a class="community-back" th:href="@{/trips/{id}(id=${trip.id})}">← Trip details</a>
+  <div class="community-title"><span class="eyebrow">PRIVATE TRIP GROUP</span><h1 th:text="${trip.title}">Trip group</h1>
+    <p>For the trip organizer and travelers with confirmed, server-verified sandbox bookings. Group messages are not public. Updates refresh approximately every 8 seconds.</p></div>
+  <div th:if="${error}" class="alert alert-error" role="alert" th:text="${error}"></div>
+  <div class="group-layout">
+    <section class="group-chat-panel" aria-label="Trip messages">
+      <div class="group-chat-header"><strong>Trip conversation</strong><span class="status-pill">Members only</span></div>
+      <div id="waylo-messages" class="group-messages" aria-live="polite" th:attr="data-trip-id=${trip.id},data-viewer-id=${viewerId},data-last-id=${lastMessageId},data-before-id=${beforeId},data-moderator=${moderator}">
+        <div class="group-message" th:each="message : ${messages}" th:attr="data-message-id=${message.id()},data-author-id=${message.authorId()}">
+          <div class="group-message-heading"><strong th:text="${message.authorName()}">Traveler</strong>
+            <time th:text="${#temporals.format(message.createdAt(),'dd MMM HH:mm')}">Time</time></div>
+          <p th:text="${message.content()}" th:classappend="${message.removed()} ? 'removed' : ''">Message content</p>
+          <details th:if="${!message.removed() and message.authorId() == viewerId}"><summary>Edit (within 15 minutes)</summary>
+            <form method="post" th:action="@{/groups/trips/{tripId}/messages/{id}/edit(tripId=${trip.id},id=${message.id()})}">
+              <label th:for="'edit-message-' + ${message.id()}">Message</label><textarea th:id="'edit-message-' + ${message.id()}" name="content" maxlength="1500" required th:text="${message.content()}"></textarea><button type="submit">Save edit</button>
+            </form></details>
+          <form th:if="${!message.removed() and (moderator or message.authorId() == viewerId)}"
+                th:action="@{/groups/trips/{tripId}/messages/{id}/remove(tripId=${trip.id},id=${message.id()})}" method="post">
+            <button type="submit" class="community-text-button">Remove message</button>
+          </form>
+        </div>
+      </div>
+      <nav aria-label="Message history"><a th:if="${oldestId > 0 and #lists.size(messages) == 70}" th:href="@{/groups/trips/{id}(id=${trip.id},beforeId=${oldestId})}">Older messages</a> <a th:if="${beforeId > 0}" th:href="@{/groups/trips/{id}(id=${trip.id})}">Latest messages</a></nav>
+      <p id="chat-status" role="status"></p>
+      <form class="group-compose" method="post" th:action="@{/groups/trips/{id}/messages(id=${trip.id})}">
+        <label for="content">Write a message</label>
+        <textarea id="content" name="content" rows="3" maxlength="1500" required placeholder="Ask about the meeting point, preparations, or your plans..."></textarea>
+        <button class="community-primary" type="submit">Send message →</button>
+      </form></section>
+    <aside class="group-people-panel"><h2>Group members</h2><p class="small-muted">Removing a member changes chat access only. It does not refund or cancel their paid reservation.</p>
+      <div class="group-person" th:each="member : ${members}">
+        <div><strong th:text="${member.user.fullName}">Member</strong><small th:text="${member.active ? 'Chat access active' : 'Chat access removed'}">Active</small>
+          <small th:if="${moderator and member.removalReason != null}" th:text="'Last removal: ' + ${member.removalReason}">Last moderation reason</small></div>
+        <form th:if="${moderator and member.active}" method="post" th:action="@{/groups/trips/{tripId}/members/{id}/remove(tripId=${trip.id},id=${member.user.id})}">
+          <label th:for="'reason-' + ${member.id}">Reason to remove</label>
+          <input th:id="'reason-' + ${member.id}" name="reason" minlength="10" maxlength="500" placeholder="Moderation reason" required>
+          <button class="community-text-button" type="submit">Remove access</button>
+        </form>
+        <form th:if="${moderator and !member.active}" method="post" th:action="@{/groups/trips/{tripId}/members/{id}/add(tripId=${trip.id},id=${member.user.id})}">
+          <label>Restoration reason<input name="reason" minlength="10" maxlength="450" required></label><button class="community-text-button" type="submit">Restore verified member</button>
+        </form>
+      </div>
+      <div th:if="${moderator}" class="group-add"><h3>Add confirmed traveler</h3><p>Only travelers with a confirmed booking for this exact trip can be added.</p>
+        <div th:if="${#lists.isEmpty(eligibleBookings)}" class="small-muted">No confirmed traveler bookings yet.</div>
+        <div class="group-person" th:each="booking : ${eligibleBookings}">
+          <span th:text="${booking.traveler.fullName}">Traveler</span>
+          <form method="post" th:action="@{/groups/trips/{tripId}/members/{id}/add(tripId=${trip.id},id=${booking.traveler.id})}"><label>Access reason<input name="reason" minlength="10" maxlength="450" required></label><button class="community-text-button" type="submit">Add / restore</button></form>
+        </div></div></aside>
+  </div></main></body></html>

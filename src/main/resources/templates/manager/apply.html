@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Become a Trip Manager | Waylo</title>
+
+  <link rel="stylesheet" th:href="@{/css/auth.css}">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    .manager-page {
+      max-width: 600px;
+      margin: 50px auto 80px;
+      padding: 0 20px;
+    }
+
+    .manager-heading {
+      margin-bottom: 28px;
+    }
+
+    .manager-heading h1 {
+      font-size: clamp(30px, 5vw, 42px);
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin: 12px 0 18px;
+      color: #151b18;
+    }
+
+    .manager-heading p {
+      color: #69736f;
+      line-height: 1.7;
+    }
+
+    .manager-eyebrow {
+      color: #168c78;
+      font-size: 12px;
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+
+    .manager-card {
+      background: #ffffff;
+      border: 1px solid #e1e7e3;
+      border-radius: 18px;
+      padding: 30px;
+    }
+
+    .manager-card h2 {
+      font-size: 22px;
+      color: #151b18;
+      margin: 0 0 22px;
+    }
+
+    .manager-field {
+      margin-bottom: 22px;
+    }
+
+    .manager-field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1d2824;
+    }
+
+    .manager-field input,
+    .manager-field textarea,
+    .manager-field select {
+      display: block;
+      width: 100%;
+      padding: 13px 14px;
+      background: #ffffff;
+      color: #1d2824;
+      font: inherit;
+      font-size: 14px;
+      border: 1px solid #d7e0da;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .manager-field textarea {
+      resize: vertical;
+      min-height: 125px;
+    }
+
+    .manager-field input:focus,
+    .manager-field textarea:focus,
+    .manager-field select:focus {
+      border-color: #168c78;
+      box-shadow: 0 0 0 3px rgba(22, 140, 120, 0.12);
+    }
+
+    .manager-error {
+      margin-top: 7px;
+      color: #b42318;
+      font-size: 13px;
+    }
+
+    .manager-notice {
+      background: #f2f8f5;
+      border: 1px solid #e1ede6;
+      border-radius: 10px;
+      padding: 15px;
+      color: #4e6258;
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .manager-notice p {
+      margin: 8px 0 0;
+    }
+
+    .manager-alert {
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .manager-alert.success {
+      background: #e9f7f0;
+      color: #176348;
+    }
+
+    .manager-alert.error {
+      background: #fef0ee;
+      color: #b42318;
+    }
+
+    .manager-status {
+      padding: 18px;
+      border: 1px solid #e1e7e3;
+      border-radius: 12px;
+      margin-bottom: 22px;
+    }
+
+    .manager-status p {
+      margin: 10px 0;
+      color: #35443c;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .status-pill {
+      display: inline-block;
+      background: #edf1ef;
+      color: #405149;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status-pill.verified {
+      background: #e1f5ea;
+      color: #176348;
+    }
+
+    .status-pill.rejected {
+      background: #fde9e7;
+      color: #b42318;
+    }
+
+    .manager-submit {
+      display: block;
+      width: 100%;
+      padding: 15px 18px;
+      color: #ffffff;
+      background: #168c78;
+      border: none;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .manager-submit:hover {
+      background: #117662;
+    }
+
+    .manager-back {
+      display: block;
+      margin-top: 24px;
+      text-align: center;
+      color: #168c78;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .manager-back:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .manager-page {
+        margin-top: 30px;
+      }
+
+      .manager-card {
+        padding: 22px;
+      }
+    }
+  </style>
+<link rel="stylesheet" href="/css/theme.css">
+<script src="/js/theme.js"></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+
+<body>
+
+<header class="navbar">
+
+  <a th:href="@{/}" class="logo">
+    <span class="logo-text">waylo</span>
+    <span class="logo-dots">...</span>
+  </a>
+
+  <nav class="nav-actions"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme" aria-pressed="false"><span data-theme-icon aria-hidden="true">☾</span> <span data-theme-label>Dark mode</span></button>
+    <a th:href="@{/trips}" class="explore-btn">
+      Explore Trips &rarr;
+    </a>
+  </nav>
+
+</header>
+
+<main class="manager-page">
+
+  <div class="manager-heading">
+
+        <span class="manager-eyebrow">
+            WAYLO FOR ORGANIZERS
+        </span>
+
+    <h1>Lead the journey.</h1>
+
+    <p>
+      Become a Waylo Trip Manager and create
+      memorable travel experiences for your community.
+    </p>
+
+  </div>
+
+  <div class="manager-card">
+
+    <!-- APPLICATION SUBMITTED SUCCESSFULLY -->
+
+    <div th:if="${param.submitted != null}"
+         class="manager-alert success">
+      Your application has been submitted successfully.
+      It is now awaiting Platform Admin review.
+    </div>
+
+    <!-- ERROR MESSAGE -->
+
+    <div th:if="${error != null}"
+         class="manager-alert error"
+         th:text="${error}">
+    </div>
+
+    <!-- EXISTING APPLICATION STATUS -->
+
+    <section th:if="${latestApplication != null}">
+
+      <h2>Application status</h2>
+
+      <div class="manager-status">
+
+        <p>
+          <strong>Organization:</strong>
+
+          <span th:text="${latestApplication.organizationName}">
+                        Organization name
+                    </span>
+        </p>
+
+        <p>
+          <strong>Document type:</strong>
+
+          <span th:text="${latestApplication.documentType}">
+                        NID
+                    </span>
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+
+          <span class="status-pill"
+                th:classappend="${latestApplication.status == T(com.mehedi.waylo.enums.ApplicationStatus).VERIFIED}
+                              ? 'verified'
+                              : (${latestApplication.status == T(com.mehedi.waylo.enums.ApplicationStatus).REJECTED}
+                                  ? 'rejected' : '')"
+                th:text="${latestApplication.status}">
+                        Status
+                    </span>
+        </p>
+
+        <p th:if="${latestApplication.rejectionReason != null
+                           and !#strings.isEmpty(latestApplication.rejectionReason)}">
+
+          <strong>Rejection reason:</strong>
+
+          <span th:text="${latestApplication.rejectionReason}">
+                    </span>
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- PENDING APPLICATION MESSAGE -->
+
+    <div class="manager-notice"
+         th:if="${latestApplication != null
+                     and latestApplication.status == T(com.mehedi.waylo.enums.ApplicationStatus).PENDING_VERIFICATION}">
+
+      <strong>Application under review</strong>
+
+      <p>
+        Your application is awaiting Platform Admin approval.
+        You cannot submit another application while this
+        one is pending.
+      </p>
+
+    </div>
+
+    <!-- VERIFIED APPLICATION MESSAGE -->
+
+    <div class="manager-alert success"
+         th:if="${latestApplication != null
+                     and latestApplication.status == T(com.mehedi.waylo.enums.ApplicationStatus).VERIFIED}">
+
+      Your Trip Manager application has been approved!
+
+      Please log out and log back in to refresh
+      your Trip Manager permissions.
+      <p><a href="/organizer/trips">Open Trip Manager →</a></p>
+
+    </div>
+
+    <!-- REJECTED APPLICATION MESSAGE -->
+
+    <div class="manager-notice"
+         th:if="${latestApplication != null
+                     and latestApplication.status == T(com.mehedi.waylo.enums.ApplicationStatus).REJECTED}">
+
+      <strong>Application not approved</strong>
+
+      <p>
+        You can update your information and
+        submit a new application below.
+      </p>
+
+    </div>
+
+    <!-- NEW APPLICATION FORM -->
+
+    <form th:if="${latestApplication == null
+                      or latestApplication.status == T(com.mehedi.waylo.enums.ApplicationStatus).REJECTED}"
+          th:action="@{/manager/apply}"
+          th:object="${request}"
+          method="post">
+
+      <h2>Apply as a Trip Manager</h2>
+
+      <!-- ORGANIZATION NAME -->
+
+      <div class="manager-field">
+
+        <label for="organizationName">
+          Organization or team name
+        </label>
+
+        <input
+                id="organizationName"
+                type="text"
+                th:field="*{organizationName}"
+                maxlength="150"
+                placeholder="e.g. Waylo Adventure Team"
+                required>
+
+        <div class="manager-error"
+             th:if="${#fields.hasErrors('organizationName')}"
+             th:errors="*{organizationName}">
+        </div>
+
+      </div>
+
+      <!-- EXPERIENCE -->
+
+      <div class="manager-field">
+
+        <label for="experience">
+          Travel organizing experience
+        </label>
+
+        <textarea
+                id="experience"
+                th:field="*{experience}"
+                minlength="20"
+                maxlength="2000"
+                rows="5"
+                placeholder="Tell us about your experience planning and managing group trips..."
+                required></textarea>
+
+        <div class="manager-error"
+             th:if="${#fields.hasErrors('experience')}"
+             th:errors="*{experience}">
+        </div>
+
+      </div>
+
+      <!-- DOCUMENT TYPE -->
+
+      <div class="manager-field">
+
+        <label for="documentType">
+          Identity document type
+        </label>
+
+        <select id="documentType"
+                th:field="*{documentType}"
+                required>
+
+          <option value="">
+            Select document type
+          </option>
+
+          <option th:each="type : ${documentTypes}"
+                  th:value="${type.name()}"
+                  th:text="${type == T(com.mehedi.waylo.enums.DocumentType).NID
+                                ? 'National ID (NID)'
+                                : 'Passport'}">
+          </option>
+
+        </select>
+
+        <div class="manager-error"
+             th:if="${#fields.hasErrors('documentType')}"
+             th:errors="*{documentType}">
+        </div>
+
+      </div>
+
+      <!-- DEVELOPMENT VERIFICATION NOTICE -->
+
+      <div class="manager-notice">
+
+        <strong>Verification information</strong>
+
+        <p>
+          Waylo requires Trip Managers to complete
+          an identity verification process.
+        </p>
+
+        <p>
+          This development version simulates approval.
+          Do not submit real NID or passport numbers
+          or images. Actual document verification
+          is not implemented yet.
+        </p>
+
+      </div>
+
+      <!-- SUBMIT -->
+
+      <button class="manager-submit" type="submit">
+        Submit application &rarr;
+      </button>
+
+    </form>
+
+    <!-- BACK TO EXPLORE -->
+
+    <a th:href="@{/trips}" class="manager-back">
+      &larr; Back to Explore Trips
+    </a>
+
+  </div>
+
+</main>
+
+</body>
+</html>

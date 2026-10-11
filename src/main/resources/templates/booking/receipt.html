@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Booking Details | Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/trip-public.css}"><link rel="stylesheet" th:href="@{/css/trip-community.css}">
+<script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('bookings')}"></header>
+<main class="public-trips"><a class="backlink" th:href="@{/bookings}">← My Bookings</a>
+  <article class="booking-receipt"><span class="booking-sandbox-label">SANDBOX TEST · NOT A REAL PAYMENT</span>
+    <h1 th:text="${booking.trip.title}">Trip</h1>
+    <strong class="booking-status" th:text="${booking.isHoldExpired() ? 'EXPIRED HOLD' : booking.status}">Status</strong>
+    <p class="alert alert-error" th:if="${booking.trip.status.name() == 'CANCELLED'}">This trip was cancelled. Your payment record is preserved. No automatic refund has been issued.</p><p th:if="${booking.status == 'CONFIRMED'}">SSLCommerz sandbox payment was independently validated. Your test reservation is confirmed in Waylo's database.</p>
+    <p th:if="${booking.status == 'PENDING_PAYMENT'}">This seat hold is awaiting gateway verification. It may expire after 30 minutes.</p>
+    <p th:if="${booking.status == 'REVIEW'}">Your gateway payment was validated, but an expired hold or seat conflict requires manual review. Do not create another booking until it is resolved.</p>
+    <p th:if="${booking.status == 'CANCELLED'}">The sandbox checkout was cancelled. No seat was confirmed.</p>
+    <p th:if="${booking.status == 'FAILED'}">The sandbox checkout failed. No seat was confirmed.</p>
+    <dl><dt>Seats</dt><dd th:text="${booking.seatCount}">1</dd>
+      <dt>Trip price</dt><dd th:text="'৳' + ${booking.tripTotal}">—</dd>
+      <dt>Advance</dt><dd th:text="${booking.advancePercent} + '% · ৳' + ${booking.advanceAmount}">—</dd>
+      <dt>Waylo fee</dt><dd th:text="'৳' + ${booking.platformFee}">—</dd>
+      <dt>Sandbox checkout amount</dt><dd th:text="'৳' + ${booking.payableAmount}">—</dd>
+      <dt>Balance already settled</dt><dd th:text="'৳' + ${booking.balancePaidAmount}">—</dd>
+      <dt>Remaining trip balance</dt><dd th:text="'৳' + ${booking.remainingBalance()}">—</dd>
+    </dl>
+    <div th:if="${booking.status == 'CONFIRMED' and groupAccess}">
+      <a class="trip-cta" th:href="@{/groups/trips/{id}(id=${booking.trip.id})}">Open your private trip group →</a>
+    </div>
+    <div class="alert alert-error" th:if="${balanceError}" th:text="${balanceError}"></div>
+    <form class="balance-payment-form" th:if="${booking.status == 'CONFIRMED' and booking.remainingBalance() > 0}"
+          th:action="@{/bookings/{id}/pay-balance(id=${booking.id})}" method="post">
+      <h2>Pay remaining balance (sandbox)</h2>
+      <p>Remaining trip amount: <strong th:text="'৳' + ${booking.remainingBalance()}">Amount</strong>. The Waylo fee is 1% of the balance payment you are starting now. No real money is collected.</p>
+      <label for="balancePhone">Phone</label><input id="balancePhone" name="phone" maxlength="20" autocomplete="tel" placeholder="01XXXXXXXXX" required>
+      <label for="balanceAddress">Address</label><input id="balanceAddress" name="address" maxlength="50" autocomplete="street-address" required>
+      <label for="balanceCity">City</label><input id="balanceCity" name="city" maxlength="50" autocomplete="address-level2" required>
+      <label for="balancePostcode">Postcode</label><input id="balancePostcode" name="postcode" maxlength="15" autocomplete="postal-code" required>
+      <button class="community-primary" type="submit" th:disabled="${!checkoutReady}">Continue to sandbox balance checkout →</button>
+      <p th:if="${!checkoutReady}">Sandbox payment is not configured yet; balance checkout is disabled.</p>
+    </form>
+    <p class="result-count">Payments are test-only. Refunds, chargeback handling, and organizer payouts still require separate implementation and review.</p>
+    <a class="trip-cta" th:href="@{/trips/{id}(id=${booking.trip.id})}">Back to trip →</a>
+  </article>
+</main></body></html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explore trips | Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/trip-public.css}">
+<script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('explore')}"></header>
+<main class="public-trips">
+  <div class="explore-heading"><div><span class="eyebrow">EXPLORE TOGETHER</span><h1>Find your next journey.</h1>
+    <p>Discover upcoming group trips, real places and the people hosting them.</p></div>
+    <a class="action-primary" th:if="${canManageTrips}" th:href="@{/organizer/trips/new}">Create a trip →</a></div>
+  <form class="explore-search" method="get" th:action="@{/trips}" role="search">
+    <div class="search-field"><svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#search}"></use></svg>
+      <input type="search" name="q" maxlength="80" th:value="${query}" placeholder="Search destinations or trip titles" aria-label="Search trips"></div>
+    <select name="destinationId" aria-label="Filter by destination">
+      <option value="">All destinations</option>
+      <option th:each="d : ${destinations}" th:value="${d.id}" th:text="${d.name}" th:selected="${destinationId != null and destinationId == d.id}">Destination</option>
+    </select>
+    <button class="action-primary" type="submit">Search trips</button>
+    <a class="clear-search" th:if="${query != '' or destinationId != null}" th:href="@{/trips}">Clear filters</a>
+  </form>
+  <p class="result-count" th:text="${#lists.size(trips)} + ' published trips found'">Trips found</p>
+  <section class="empty-trip" th:if="${#lists.isEmpty(trips)}"><h2>No trips match this search.</h2>
+    <p>Try a different destination or search term.</p><a th:href="@{/trips}">Browse all trips →</a></section>
+  <section class="trip-grid" aria-label="Published trips">
+    <article class="trip-card" th:each="trip : ${trips}">
+      <a th:href="@{/trips/{id}(id=${trip.id})}" class="trip-cover">
+        <img th:if="${trip.coverImageUrl != null}" th:src="${trip.coverImageUrl}" th:alt="${trip.title}" loading="lazy">
+        <div class="trip-cover-placeholder" th:unless="${trip.coverImageUrl != null}"><svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#compass}"></use></svg></div>
+        <span class="trip-cover-label">Published trip</span>
+      </a>
+      <div class="trip-card-body"><span class="trip-location"><svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#pin}"></use></svg><span th:text="${trip.destination.name}">Place</span></span>
+        <h2 th:text="${trip.title}">Journey title</h2><p class="trip-description" th:text="${trip.description}">Description</p>
+        <div class="trip-meta"><span><svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#calendar}"></use></svg><time th:text="${#temporals.format(trip.departureDate,'dd MMM yyyy')}">Date</time></span>
+          <span><svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#users}"></use></svg>
+            <strong th:text="${seatAvailability[trip.id]}">0</strong> seats left</span></div>
+        <div class="trip-card-footer"><div class="trip-price"><span th:text="'৳' + ${trip.price}">৳0</span><small>per person</small></div>
+          <a class="trip-cta" th:href="@{/trips/{id}(id=${trip.id})}">Trip & booking →</a></div>
+      </div>
+    </article>
+  </section>
+</main></body></html>

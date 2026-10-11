@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Bookings | Waylo</title>
+<link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/trip-public.css}">
+<script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('bookings')}"></header>
+<main class="public-trips bookings-index">
+  <span class="eyebrow">YOUR JOURNEYS</span><h1>My Bookings</h1>
+  <p class="result-count">All payments here are SSLCommerz sandbox tests. No real money is collected.</p>
+  <section class="empty-trip" th:if="${#lists.isEmpty(bookings)}"><h2>No reservations yet.</h2><p>Find a published trip and test a reservation when sandbox checkout is ready.</p>
+    <a th:href="@{/trips}">Explore trips →</a></section>
+  <div class="booking-list"><article class="booking-list-card" th:each="booking : ${bookings}">
+    <div><span class="booking-status" th:text="${booking.isHoldExpired() ? 'EXPIRED HOLD' : booking.status}">Status</span>
+      <h2 th:text="${booking.trip.title}">Trip</h2><p th:text="${booking.seatCount} + ' seats · ' + ${booking.trip.destination.name}">Seats</p></div>
+    <div class="booking-list-amount"><strong th:text="'৳' + ${booking.payableAmount}">Amount</strong><small>advance + fee (sandbox)</small>
+      <a th:href="@{/bookings/{id}(id=${booking.id})}">View details →</a>
+      <a th:if="${booking.status == 'CONFIRMED' and groupAccessByTrip[booking.trip.id]}" th:href="@{/groups/trips/{id}(id=${booking.trip.id})}">Trip group →</a></div>
+  </article></div>
+</main></body></html>

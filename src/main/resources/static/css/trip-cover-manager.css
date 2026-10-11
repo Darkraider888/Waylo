@@ -1,0 +1,30 @@
+/* Scoped upload controls for Waylo organizer trip cards */
+.wl-manager-heading { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; flex-wrap:wrap; }
+.wl-manager-heading .action-primary, .wl-manager-heading .outline-button { flex-shrink:0; }
+.wl-cover-upload {
+    display:flex; flex-direction:column; gap:.6rem;
+    margin:1rem 0; padding:1rem; border:1px solid var(--border);
+    background:var(--background); border-radius:12px; color:var(--text);
+}
+.wl-cover-upload label { font-size:.85rem; font-weight:800; color:var(--text); }
+.wl-cover-upload input[type=file] {
+    width:100%; max-width:100%; padding:.65rem; border:1px solid var(--border);
+    border-radius:9px; background:var(--field); color:var(--text);
+    font:inherit; font-size:.8rem;
+}
+.wl-cover-upload input[type=file]::file-selector-button {
+    border:1px solid var(--border); border-radius:8px;
+    padding:.45rem .7rem; margin-right:.7rem;
+    background:var(--surface); color:var(--text); cursor:pointer;
+}
+.wl-cover-upload-btn {
+    display:block; width:100%; border:0; border-radius:9px;
+    padding:.75rem 1rem; cursor:pointer; font:inherit; font-weight:800;
+    color:#fff; background:#168c78;
+}
+.wl-cover-upload-btn:hover { background:#106f5e; }
+.wl-cover-upload button:focus-visible, .wl-cover-upload input:focus-visible {
+    outline:3px solid var(--green); outline-offset:3px;
+}
+.wl-cover-upload small { color:var(--muted); font-size:.72rem; line-height:1.4; }
+@media (max-width:680px) { .wl-manager-heading { align-items:flex-start; } }

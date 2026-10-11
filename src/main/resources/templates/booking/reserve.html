@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Reserve ' + ${trip.title} + ' | Waylo'">Reserve your seat | Waylo</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/social.css}">
+    <link rel="stylesheet" th:href="@{/css/trip-public.css}">
+    <link rel="stylesheet" th:href="@{/css/booking-checkout.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+    <script th:src="@{/js/booking.js}" defer></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app">
+<header th:replace="~{fragments/nav :: navbar('bookings')}"></header>
+<main class="public-trips wl-reservation-page">
+    <a class="backlink" th:href="@{/trips/{id}(id=${trip.id})}">&larr; Back to trip</a>
+    <div class="wl-reservation-head">
+        <span class="eyebrow">SEAT RESERVATION &middot; SANDBOX</span>
+        <h1>Reserve your seat.</h1>
+        <p>Choose your seats, decide how much to pay now, and review the exact checkout charge before proceeding.</p>
+    </div>
+
+    <div th:if="${bookingError}" class="alert alert-error" role="alert" th:text="${bookingError}"></div>
+    <div th:if="${departed or availableSeats <= 0}" class="wl-reservation-closed" role="status">
+        <h2>Reservations are currently closed.</h2>
+        <p th:if="${departed}">This trip has already departed.</p>
+        <p th:if="${!departed and availableSeats <= 0}">There are currently no seats available.</p>
+        <a th:href="@{/trips}">Explore other trips &rarr;</a>
+    </div>
+
+    <form th:if="${!departed and availableSeats > 0}" class="wl-reservation-form"
+          th:action="@{/trips/{id}/book(id=${trip.id})}" method="post"
+          th:attr="data-price=${trip.price},data-max-seats=${maxBookableSeats},data-checkout-ready=${checkoutReady}">
+        <div class="wl-reservation-grid">
+            <div class="wl-reservation-left">
+                <section class="wl-reservation-card wl-reservation-trip" aria-label="Selected trip">
+                    <div class="wl-reservation-trip-photo">
+                        <img th:if="${trip.coverImageUrl != null and !#strings.isEmpty(trip.coverImageUrl)}"
+                             th:src="${trip.coverImageUrl}" th:alt="${'Photo of ' + trip.destination.name}">
+                        <div class="wl-photo-placeholder"
+                             th:unless="${trip.coverImageUrl != null and !#strings.isEmpty(trip.coverImageUrl)}">
+                            <svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#compass}"></use></svg>
+                        </div>
+                    </div>
+                    <div class="wl-reservation-trip-info">
+                        <span class="eyebrow" th:text="${trip.destination.name}">Destination</span>
+                        <h2 th:text="${trip.title}">Trip name</h2>
+                        <p th:text="${#temporals.format(trip.departureDate,'dd MMM yyyy, HH:mm')}">Departure</p>
+                        <p class="wl-seats-available"><strong th:text="${availableSeats}">0</strong> seats available</p>
+                    </div>
+                </section>
+
+                <section class="wl-reservation-card wl-reservation-config">
+                    <div class="wl-step-heading"><span class="wl-step-number">1</span>
+                        <div><h2>Your reservation</h2><p>Choose seats and your advance amount.</p></div>
+                    </div>
+                    <div class="wl-control-row wl-seat-control-row">
+                        <div><label for="seats">Seats</label><p>Maximum 6 seats per reservation.</p></div>
+                        <div class="wl-seat-stepper" role="group" aria-label="Number of seats">
+                            <button type="button" data-seat-step="-1" aria-label="Remove one seat">&minus;</button>
+                            <input id="seats" name="seats" type="number" inputmode="numeric" value="1" min="1"
+                                   th:max="${maxBookableSeats}" required aria-label="Seats to reserve">
+                            <button type="button" data-seat-step="1" aria-label="Add one seat">+</button>
+                        </div>
+                    </div>
+                    <div class="wl-control-row wl-trip-cost-row">
+                        <span>Trip price per person</span>
+                        <strong>&#2547;<span th:text="${trip.price}">0.00</span></strong>
+                    </div>
+                    <div class="wl-advance-settings">
+                        <div class="wl-advance-head"><label for="advancePercent">Advance payment</label>
+                            <output for="advancePercent" id="advancePercentValue">10%</output></div>
+                        <input id="advancePercent" name="advancePercent" type="range"
+                               min="10" max="100" step="5" value="10" aria-label="Pay now percentage">
+                        <div class="wl-slider-scale"><span>10% minimum</span><span>100% full payment</span></div>
+                        <p>Choose how much of the trip price to pay now. The 1% Waylo fee applies to this payment.</p>
+                    </div>
+                </section>
+
+                <section class="wl-reservation-card wl-reservation-contact">
+                    <div class="wl-step-heading"><span class="wl-step-number">2</span>
+                        <div><h2>Billing details</h2><p>Required for the SSLCommerz test checkout.</p></div>
+                    </div>
+                    <div class="wl-form-field"><label for="bookingPhone">Phone number</label>
+                        <input id="bookingPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
+                               pattern="\+?[0-9]{10,15}" maxlength="20" placeholder="01XXXXXXXXX" required></div>
+                    <div class="wl-form-field"><label for="bookingAddress">Address</label>
+                        <input id="bookingAddress" name="address" type="text" autocomplete="street-address"
+                               maxlength="50" placeholder="Street or area" required></div>
+                    <div class="wl-form-two">
+                        <div class="wl-form-field"><label for="bookingCity">City</label>
+                            <input id="bookingCity" name="city" type="text" autocomplete="address-level2"
+                                   maxlength="50" required></div>
+                        <div class="wl-form-field"><label for="bookingPostcode">Postcode</label>
+                            <input id="bookingPostcode" name="postcode" type="text" autocomplete="postal-code"
+                                   pattern="[A-Za-z0-9 -]{3,15}" maxlength="15" required></div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="wl-reservation-summary wl-reservation-card" aria-label="Payment summary">
+                <span class="booking-sandbox-label">Test payments only</span>
+                <h2>Payment summary</h2>
+                <div class="wl-summary-row"><span>Trip price</span><strong id="perSeatAmount">&mdash;</strong></div>
+                <div class="wl-summary-row"><span>Seats</span><strong id="seatsSummary">1</strong></div>
+                <div class="wl-summary-row"><span>Trip total</span><strong id="tripTotal">&mdash;</strong></div>
+                <div class="wl-summary-divider"></div>
+                <div class="wl-summary-row"><span>Advance payment <span id="advanceRateLabel">(10%)</span></span>
+                    <strong id="advanceAmount">&mdash;</strong></div>
+                <div class="wl-summary-row"><span>Waylo fee (1%)</span><strong id="platformFee">&mdash;</strong></div>
+                <div class="wl-pay-now-row">
+                    <div><span>Pay now</span><small>Includes the Waylo fee for this payment</small></div>
+                    <strong id="paymentDue" aria-live="polite">&mdash;</strong>
+                </div>
+                <div class="wl-summary-row wl-remaining-row"><span>Remaining trip balance</span>
+                    <strong id="remainingBalance">&mdash;</strong></div>
+                <p class="wl-summary-note">You can pay the remaining trip balance later from My Bookings. Only the amount shown under <strong>Pay now</strong> is charged in this checkout.</p>
+                <div class="wl-invalid-total" id="paymentLimitWarning" role="alert" hidden></div>
+                <button class="wl-submit-payment" id="continueBooking" type="submit"
+                        disabled>Continue to sandbox payment &rarr;</button>
+                <noscript><p class="wl-checkout-unavailable">Enable JavaScript to review your exact payment before continuing.</p></noscript>
+                <p class="wl-checkout-unavailable" th:if="${!checkoutReady}">
+                    SSLCommerz Sandbox isn't configured yet. You can review the charges, but cannot start checkout.
+                </p>
+                <p class="wl-sandbox-footnote">No real money is collected. A temporary hold lasts 30 minutes. Booking is confirmed only after Waylo independently verifies the gateway payment.</p>
+            </aside>
+        </div>
+    </form>
+</main>
+</body>
+</html>

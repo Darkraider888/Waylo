@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${trip.title} + ' | Waylo'">Trip details | Waylo</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/social.css}">
+    <link rel="stylesheet" th:href="@{/css/trip-public.css}">
+    <link rel="stylesheet" th:href="@{/css/booking-checkout.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app">
+<header th:replace="~{fragments/nav :: navbar('explore')}"></header>
+
+<main class="public-trips detail-page wl-booking-detail">
+    <a class="backlink" th:href="@{/trips}">&larr; Explore all trips</a>
+
+    <div class="wl-detail-hero">
+        <img th:if="${trip.coverImageUrl != null and !#strings.isEmpty(trip.coverImageUrl)}"
+             th:src="${trip.coverImageUrl}"
+             th:alt="${'Cover photo for ' + trip.title}">
+        <div th:unless="${trip.coverImageUrl != null and !#strings.isEmpty(trip.coverImageUrl)}"
+             class="wl-photo-placeholder">
+            <svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#compass}"></use></svg>
+            <span>Explore somewhere new with Waylo</span>
+        </div>
+    </div>
+
+    <div class="trip-detail-grid wl-detail-grid">
+        <section class="trip-detail-main">
+            <span class="eyebrow" th:text="${trip.destination.name}">Destination</span>
+            <h1 th:text="${trip.title}">Trip title</h1>
+            <p class="trip-organizer">Hosted by
+                <a th:href="@{/profile/{id}(id=${trip.organizer.id})}"
+                   th:text="${trip.organizer.fullName}">Trip organizer</a>
+            </p>
+            <div class="wl-trip-facts">
+                <span>
+                    <svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#calendar}"></use></svg>
+                    <time th:text="${#temporals.format(trip.departureDate, 'dd MMM yyyy, HH:mm')}">Departure time</time>
+                </span>
+                <span>
+                    <svg class="wa-icon" aria-hidden="true"><use th:href="@{/icons/waylo.svg#users}"></use></svg>
+                    <strong th:text="${availableSeats}">0</strong> seats currently available
+                </span>
+            </div>
+            <h2>About this journey</h2>
+            <p class="trip-detail-description" th:text="${trip.description}">Trip itinerary</p>
+            <a th:if="${trip.destination.latitude != null and trip.destination.longitude != null}"
+               class="backlink" target="_blank" rel="noopener noreferrer"
+               th:href="${'https://www.google.com/maps/search/?api=1&amp;query=' + trip.destination.latitude + ',' + trip.destination.longitude}">
+                Open destination in Google Maps &nearr;
+            </a>
+        </section>
+
+        <aside class="trip-booking-panel wl-detail-booking-panel" aria-label="Reservation details">
+            <span class="booking-sandbox-label">SSLCommerz Sandbox &middot; Test payments</span>
+            <div class="wl-detail-price">
+                <span class="wl-price">&#2547;<span th:text="${trip.price}">0.00</span></span>
+                <small>per person</small>
+            </div>
+            <dl>
+                <dt>Departure</dt>
+                <dd th:text="${#temporals.format(trip.departureDate, 'dd MMM yyyy, HH:mm')}">Date</dd>
+                <dt>Available seats</dt>
+                <dd th:text="${availableSeats} + ' of ' + ${trip.capacity}">Seats</dd>
+            </dl>
+
+            <div th:if="${departed}" class="booking-notice" role="status">
+                <strong>This trip has departed.</strong>
+                <p>Seat reservations have closed.</p>
+            </div>
+            <div th:if="${!departed and availableSeats <= 0}" class="booking-notice" role="status">
+                <strong>Currently fully booked.</strong>
+                <p>There are no seats available to reserve right now.</p>
+            </div>
+
+            <div th:if="${!departed and availableSeats > 0}">
+                <div class="wl-advance-promise">
+                    <strong>Choose how much you pay now.</strong>
+                    <p>Reserve with 10%-100% advance. A 1% Waylo fee is added to the payment you make.</p>
+                </div>
+                <a class="trip-cta wl-reserve-action"
+                   th:href="@{/trips/{id}/reserve(id=${trip.id})}">
+                    Reserve Seat &rarr;
+                </a>
+                <p class="wl-pay-helper" th:if="${!checkoutReady}">
+                    Preview the booking breakdown. Sandbox checkout needs gateway configuration before it can accept test payments.
+                </p>
+                <p class="wl-pay-helper" th:if="${checkoutReady}">
+                    Seats are held temporarily only when you continue to checkout. Payment is confirmed after independent verification.
+                </p>
+            </div>
+
+            <a class="booking-history-link" th:if="${signedIn}" th:href="@{/bookings}">My Bookings &rarr;</a>
+            <a class="trip-cta wl-group-link" th:if="${groupAccess}"
+               th:href="@{/groups/trips/{id}(id=${trip.id})}">Open private trip group &rarr;</a>
+        </aside>
+    </div>
+</main>
+</body>
+</html>

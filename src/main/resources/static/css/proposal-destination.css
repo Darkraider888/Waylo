@@ -1,0 +1,41 @@
+/* Scoped to the one-trip organizer form; respects existing Waylo theme variables. */
+.destination-add-toggle {
+  display: inline-flex;
+  margin: 10px 0 0;
+  padding: 8px 2px;
+  background: transparent;
+  border: 0;
+  color: var(--green);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: left;
+}
+.destination-add-toggle:hover { text-decoration: underline; }
+.destination-add-toggle:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.community-form .destination-suggestion[hidden] { display: none; }
+.community-form .destination-suggestion {
+  margin: 12px 0 24px;
+  padding: 18px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  color: var(--text);
+  min-width: 0;
+}
+.community-form .destination-suggestion legend {
+  padding: 0 8px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 900;
+}
+.community-form .destination-suggestion-note {
+  margin: 5px 0 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+@media(max-width: 580px) {
+  .community-form .destination-suggestion { padding: 12px; }
+}

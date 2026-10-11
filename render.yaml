@@ -1,0 +1,43 @@
+# Prepared configuration only. Creating this Blueprint would create paid resources.
+# Review the plan and approve deployment before applying it.
+services:
+  - type: web
+    name: waylo
+    runtime: docker
+    plan: 1c-2g
+    region: singapore
+    numInstances: 1
+    autoDeployTrigger: off
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    disk:
+      name: waylo-legacy-photos
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: deployment
+      - key: WAYLO_DB_URL
+        sync: false
+      - key: WAYLO_DB_USERNAME
+        sync: false
+      - key: WAYLO_DB_PASSWORD
+        sync: false
+      - key: WAYLO_PUBLIC_URL
+        sync: false
+      - key: WAYLO_MAIL_HOST
+        sync: false
+      - key: WAYLO_MAIL_PORT
+        value: "587"
+      - key: WAYLO_MAIL_USERNAME
+        sync: false
+      - key: WAYLO_MAIL_PASSWORD
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: WAYLO_JWT_ENABLED
+        value: "false"
+      - key: WAYLO_SSLCOMMERZ_ENABLED
+        value: "false"
+# Add sandbox credentials in the host's secret settings only after deployment.

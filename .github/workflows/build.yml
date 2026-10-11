@@ -1,0 +1,26 @@
+name: Build and isolated MySQL tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+      - run: chmod +x mvnw
+      - run: ./mvnw --batch-mode clean verify
+      - name: Build container without publishing
+        run: docker build -t waylo:test .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: target/surefire-reports/

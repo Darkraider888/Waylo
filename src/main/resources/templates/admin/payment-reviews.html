@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandbox payment reviews | Waylo</title><link rel="stylesheet" th:href="@{/css/auth.css}"><link rel="stylesheet" th:href="@{/css/theme.css}">
+<link rel="stylesheet" th:href="@{/css/social.css}"><link rel="stylesheet" th:href="@{/css/admin.css}"><script th:src="@{/js/theme.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('admin')}"></header>
+<main class="admin-page"><a class="community-back" th:href="@{/admin/dashboard}">← Admin dashboard</a>
+<span class="eyebrow">SANDBOX ONLY</span><h1>Payment exceptions.</h1>
+<p>No manual confirmation or refund buttons exist here. A successful browser redirect is not proof of payment. Investigate any REVIEW transaction with SSLCommerz sandbox records before taking action.</p>
+<h2>Reservation conflicts</h2>
+<div class="admin-empty" th:if="${#lists.isEmpty(bookingReviews)}">No booking conflicts awaiting review.</div>
+<article class="admin-application" th:each="booking : ${bookingReviews}">
+  <h3 th:text="'Booking #' + ${booking.id}">Booking</h3>
+  <dl class="admin-metadata"><dt>Trip</dt><dd th:text="${booking.trip.title}">Trip</dd>
+    <dt>Traveler</dt><dd th:text="${booking.traveler.fullName}">Name</dd>
+    <dt>Seats</dt><dd th:text="${booking.seatCount}">Seats</dd>
+    <dt>Status</dt><dd th:text="${booking.status}">REVIEW</dd>
+    <dt>Advance plus fee</dt><dd th:text="'৳' + ${booking.payableAmount}">Amount</dd></dl>
+</article>
+<h2>Payment exceptions</h2>
+<div class="admin-empty" th:if="${#lists.isEmpty(paymentReviews)}">No payment transactions awaiting review.</div>
+<article class="admin-application" th:each="attempt : ${paymentReviews}">
+  <h3 th:text="'Attempt #' + ${attempt.id}">Payment attempt</h3>
+  <dl class="admin-metadata"><dt>Booking</dt><dd th:text="${attempt.booking.id}">Booking</dd>
+    <dt>Trip</dt><dd th:text="${attempt.booking.trip.title}">Trip</dd>
+    <dt>Traveler</dt><dd th:text="${attempt.booking.traveler.fullName}">Traveler</dd>
+    <dt>Transaction reference</dt><dd th:text="${attempt.transactionId}">Reference</dd>
+    <dt>Review reason</dt><dd th:text="${attempt.reviewReason}">Review</dd>
+    <dt>Payment type</dt><dd th:text="${attempt.paymentKind}">BALANCE</dd>
+    <dt>Expected charge</dt><dd th:text="'৳' + ${attempt.expectedAmount}">Amount</dd></dl>
+</article>
+</main></body></html>

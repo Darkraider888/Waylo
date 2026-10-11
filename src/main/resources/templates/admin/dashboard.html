@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Platform Admin | Waylo</title>
+
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/social.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+
+    <script th:src="@{/js/theme.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+
+<body class="social-app">
+
+<header th:replace="~{fragments/nav :: navbar('admin')}"></header>
+
+<main class="admin-page">
+
+    <!-- PAGE HEADER -->
+
+    <div class="admin-page-top">
+        <div class="admin-page-intro">
+
+            <span class="eyebrow">
+                Waylo operations
+            </span>
+
+            <h1>Platform administration.</h1>
+
+            <p>
+                Review Trip Manager applications,
+                manage destinations, and oversee the platform.
+            </p>
+
+        </div>
+    </div>
+
+    <!-- ADMIN NAVIGATION BUTTONS -->
+
+    <nav class="admin-quick-actions"
+         aria-label="Administration tools">
+
+        <a class="admin-quick-link"
+           th:href="@{/admin/moderation}">
+
+            <span class="admin-quick-copy">
+                <strong>Platform overview &amp; reports</strong>
+                <small>
+                    Platform counts, content reports
+                    and audit history
+                </small>
+            </span>
+
+            <span class="admin-quick-arrow"
+                  aria-hidden="true">→</span>
+
+        </a>
+
+        <a class="admin-quick-link"
+           th:href="@{/admin/trips}">
+
+            <span class="admin-quick-copy">
+                <strong>Moderate trips</strong>
+                <small>
+                    Review published trips and manage trip status
+                </small>
+            </span>
+
+            <span class="admin-quick-arrow"
+                  aria-hidden="true">→</span>
+
+        </a>
+
+        <a class="admin-quick-link"
+           th:href="@{/admin/destinations}">
+
+            <span class="admin-quick-copy">
+                <strong>Manage destinations</strong>
+                <small>
+                    Update destination details and photographs
+                </small>
+            </span>
+
+            <span class="admin-quick-arrow"
+                  aria-hidden="true">→</span>
+
+        </a>
+
+        <a class="admin-quick-link"
+           th:href="@{/admin/payment-reviews}">
+
+            <span class="admin-quick-copy">
+                <strong>Payment exceptions</strong>
+                <small>
+                    Review sandbox booking and payment conflicts
+                </small>
+            </span>
+
+            <span class="admin-quick-arrow"
+                  aria-hidden="true">→</span>
+
+        </a>
+
+    </nav>
+
+    <!-- ADMIN STATISTICS -->
+
+    <div class="admin-stats">
+
+        <div>
+            <span>Pending applications</span>
+
+            <b th:text="${#lists.size(applications)}">
+                0
+            </b>
+        </div>
+
+        <div>
+            <span>Verification method</span>
+
+            <b class="small-number">
+                Manual demo approval
+            </b>
+        </div>
+
+    </div>
+
+    <!-- ERROR AND SUCCESS MESSAGES -->
+
+    <div class="alert alert-error"
+         th:if="${#ctx.containsVariable('reviewError')}"
+         th:text="${#ctx.getVariable('reviewError')}"
+         role="alert">
+    </div>
+
+    <div class="alert alert-success"
+         th:if="${param.approved}">
+        Application approved.
+    </div>
+
+    <div class="alert alert-success"
+         th:if="${param.rejected}">
+        Application rejected.
+    </div>
+
+    <!-- TRIP MANAGER APPLICATIONS -->
+
+    <section>
+
+        <h2>Trip Manager applications</h2>
+
+        <div class="admin-empty"
+             th:if="${#lists.isEmpty(applications)}">
+
+            No pending applications.
+            You're all caught up.
+
+        </div>
+
+        <article class="admin-application"
+                 th:each="managerRequest : ${applications}">
+
+            <div class="admin-application-header">
+
+                <div>
+                    <span class="eyebrow">
+                        PENDING REVIEW
+                    </span>
+
+                    <h3 th:text="${managerRequest.organizationName}">
+                        Organization
+                    </h3>
+                </div>
+
+                <span class="admin-pill">
+                    PENDING_VERIFICATION
+                </span>
+
+            </div>
+
+            <!-- APPLICATION DETAILS -->
+
+            <dl class="admin-metadata">
+
+                <dt>Applicant</dt>
+                <dd th:text="${managerRequest.user.fullName}">
+                    User
+                </dd>
+
+                <dt>Email</dt>
+                <dd th:text="${managerRequest.user.email}">
+                    Email
+                </dd>
+
+                <dt>Document type selected</dt>
+                <dd th:text="${managerRequest.documentType}">
+                    NID
+                </dd>
+
+                <dt>Applied</dt>
+                <dd th:text="${#temporals.format(
+                    managerRequest.appliedAt,
+                    'dd MMM yyyy'
+                )}">
+                    Date
+                </dd>
+
+                <dt>Experience</dt>
+                <dd class="prewrap"
+                    th:text="${managerRequest.experience}">
+                    Experience
+                </dd>
+
+            </dl>
+
+            <div class="admin-warning">
+                Development mode: no real identity document
+                has been uploaded or verified.
+                Approve fictional test applications only.
+            </div>
+
+            <!-- APPROVE / REJECT -->
+
+            <div class="review-actions">
+
+                <!-- APPROVE FORM -->
+
+                <form method="post"
+                      th:action="@{/admin/applications/{id}/approve(
+                          id=${managerRequest.id}
+                      )}">
+
+                    <button class="action-primary"
+                            type="submit">
+                        Approve demo application
+                    </button>
+
+                </form>
+
+                <!-- REJECT FORM -->
+
+                <form method="post"
+                      th:action="@{/admin/applications/{id}/reject(
+                          id=${managerRequest.id}
+                      )}">
+
+                    <label class="admin-rejection-field"
+                           style="display:block;width:100%">
+
+                        Rejection reason
+
+                        <textarea
+                                name="rejectionReason"
+                                rows="2"
+                                maxlength="500"
+                                required
+                                placeholder="Explain why the application wasn't approved...">
+                        </textarea>
+
+                    </label>
+
+                    <button class="outline-button"
+                            type="submit">
+                        Reject
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+    </section>
+
+    <!-- TRIP-SPECIFIC ORGANIZER PROPOSALS -->
+
+    <section>
+
+        <h2>Trip-specific organizer proposals</h2>
+
+        <p class="small-muted">
+            Approval grants this applicant control
+            of exactly one draft trip.
+
+            Their account stays MEMBER;
+            it does not confer global Trip Manager powers.
+        </p>
+
+        <div class="admin-empty"
+             th:if="${#lists.isEmpty(tripProposals)}">
+
+            No pending individual trip proposals.
+
+        </div>
+
+        <article class="admin-application"
+                 th:each="proposal : ${tripProposals}">
+
+            <div class="admin-application-header">
+
+                <div>
+                    <span class="eyebrow">
+                        SINGLE-TRIP APPLICATION
+                    </span>
+
+                    <h3 th:text="${proposal.title}">
+                        Trip
+                    </h3>
+                </div>
+
+                <span class="admin-pill">
+                    PENDING REVIEW
+                </span>
+
+            </div>
+
+            <!-- PROPOSAL DETAILS -->
+
+            <dl class="admin-metadata">
+
+                <dt>Applicant</dt>
+                <dd th:text="${proposal.applicant.fullName}">
+                    Applicant
+                </dd>
+
+                <dt>Contact</dt>
+                <dd th:text="${proposal.applicant.email}">
+                    Email
+                </dd>
+
+                <dt>Location</dt>
+                <dd th:text="${proposal.destination != null
+                    ? proposal.destination.name
+                    : proposal.suggestedDestinationName
+                      + ' — '
+                      + proposal.suggestedDistrict
+                      + ', '
+                      + proposal.suggestedCountry
+                      + ' (new suggestion)'}">
+                    Destination
+                </dd>
+
+                <dt th:if="${proposal.destination == null}">
+                    Suggested location notes
+                </dt>
+
+                <dd th:if="${proposal.destination == null}"
+                    class="prewrap"
+                    th:text="${proposal.suggestedDescription}">
+                    Notes
+                </dd>
+
+                <dt th:if="${proposal.suggestedLatitude != null}">
+                    Coordinates
+                </dt>
+
+                <dd th:if="${proposal.suggestedLatitude != null}"
+                    th:text="${proposal.suggestedLatitude
+                        + ', '
+                        + proposal.suggestedLongitude}">
+                    Coordinates
+                </dd>
+
+                <dt>Departure</dt>
+                <dd th:text="${#temporals.format(
+                    proposal.departureDate,
+                    'dd MMM yyyy · HH:mm'
+                )}">
+                    Date
+                </dd>
+
+                <dt>Price</dt>
+                <dd th:text="'৳' + ${proposal.price}">
+                    Price
+                </dd>
+
+                <dt>Capacity</dt>
+                <dd th:text="${proposal.capacity}">
+                    Seats
+                </dd>
+
+                <dt>Document type stated</dt>
+                <dd th:text="${proposal.documentType}">
+                    Type
+                </dd>
+
+                <dt>Itinerary</dt>
+                <dd class="prewrap"
+                    th:text="${proposal.description}">
+                    Description
+                </dd>
+
+                <dt>Experience</dt>
+                <dd class="prewrap"
+                    th:text="${proposal.motivation}">
+                    Motivation
+                </dd>
+
+            </dl>
+
+            <div class="admin-warning">
+                Document type only: no actual NID/passport
+                or identity verification was completed
+                by this app.
+
+                Use fictional demo records unless your
+                organization performs real off-platform
+                verification.
+            </div>
+
+            <!-- APPROVAL / REJECTION -->
+
+            <div class="review-actions">
+
+                <!-- APPROVE ONE TRIP -->
+
+                <form method="post"
+                      th:action="@{/admin/trip-proposals/{id}/approve(
+                          id=${proposal.id}
+                      )}">
+
+                    <label>
+                        <input
+                                type="checkbox"
+                                name="reviewed"
+                                value="true"
+                                required>
+
+                        I reviewed the trip and,
+                        if applicable, the new destination
+                        suggested by the applicant (demo)
+                    </label>
+
+                    <button class="action-primary"
+                            type="submit">
+                        Approve this one trip
+                    </button>
+
+                </form>
+
+                <!-- REJECT PROPOSAL -->
+
+                <form method="post"
+                      th:action="@{/admin/trip-proposals/{id}/reject(
+                          id=${proposal.id}
+                      )}">
+
+                    <label class="admin-rejection-field"
+                           style="display:block;width:100%">
+
+                        Rejection reason
+
+                        <textarea
+                                name="rejectionReason"
+                                minlength="10"
+                                maxlength="500"
+                                rows="2"
+                                required>
+                        </textarea>
+
+                    </label>
+
+                    <button class="outline-button"
+                            type="submit">
+                        Reject proposal
+                    </button>
+
+                </form>
+
+            </div>
+
+        </article>
+
+    </section>
+
+    <!-- PRIVATE GROUP MODERATION -->
+
+    <section>
+
+        <h2>Private group moderation</h2>
+
+        <p class="small-muted">
+            Platform Admins may access groups for moderation;
+            ordinary members require verified bookings.
+        </p>
+
+        <div class="admin-empty"
+             th:if="${#lists.isEmpty(publishedGroups)}">
+
+            No published groups yet.
+
+        </div>
+
+        <div class="destination-row"
+             th:each="trip : ${publishedGroups}">
+
+            <div>
+
+                <strong th:text="${trip.title}">
+                    Trip
+                </strong>
+
+                <p th:text="${trip.destination.name}">
+                    Destination
+                </p>
+
+            </div>
+
+            <a class="outline-button"
+               th:href="@{/groups/trips/{id}(id=${trip.id})}">
+                Open group →
+            </a>
+
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

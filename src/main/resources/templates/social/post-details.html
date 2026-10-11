@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Story | Waylo</title><link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}"><link rel="stylesheet" th:href="@{/css/social.css}">
+    <script th:src="@{/js/theme.js}" defer></script><script th:src="@{/js/social.js}" defer></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('feed')}"></header>
+<main class="edit-shell post-detail-shell">
+    <a class="backlink" th:href="@{/feed}">← Back to feed</a>
+    <article class="feed-post">
+        <div class="post-head"><a class="person-avatar" th:href="@{/profile/{id}(id=${card.post.user.id})}">
+            <img th:if="${card.post.user.avatarUrl != null}" th:src="${card.post.user.avatarUrl}" alt="">
+            <span th:unless="${card.post.user.avatarUrl != null}" th:text="${#strings.substring(card.post.user.fullName,0,1)}">W</span>
+        </a><div class="person-meta"><a th:href="@{/profile/{id}(id=${card.post.user.id})}" th:text="${card.post.user.fullName}">Traveler</a>
+            <small th:text="${#temporals.format(card.post.createdAt,'dd MMM yyyy · HH:mm')}">Date</small></div></div>
+        <img class="post-photo" th:if="${card.post.imageUrl != null}" th:src="${card.post.imageUrl}" alt="Travel photo">
+        <div class="post-body"><p th:text="${card.post.caption}">Caption</p>
+            <div class="post-tags"><span class="post-tag" th:if="${card.post.destination != null}" th:text="'⌖ ' + ${card.post.destination.name}"></span>
+                <a class="post-tag linked" th:if="${card.post.trip != null}" th:href="@{/trips/{id}(id=${card.post.trip.id})}" th:text="'↗ ' + ${card.post.trip.title}"></a></div>
+            <div class="post-actions">
+                <form th:if="${loggedIn}" th:action="@{/posts/{id}/like(id=${card.post.id})}" method="post">
+                    <input type="hidden" name="back" value="post"><button class="icon-action" th:classappend="${card.liked} ? 'active-like' : ''" type="submit">♥ <span th:text="${card.likeCount}">0</span></button>
+                </form>
+                <span class="icon-action static-action" th:unless="${loggedIn}">♡ <span th:text="${card.likeCount}">0</span></span>
+                <span class="icon-action static-action">♧ <span th:text="${card.commentCount}">0</span></span>
+                <button type="button" class="icon-action" th:attr="data-share-url=@{/posts/{id}(id=${card.post.id})}">↗ Share</button>
+                <form th:if="${loggedIn}" th:action="@{/posts/{id}/save(id=${card.post.id})}" method="post">
+                    <input type="hidden" name="back" value="post"><button type="submit" class="icon-action" th:text="${card.saved ? '▣ Saved' : '▢ Save'}">Save</button>
+                </form>
+            </div>
+        </div>
+    </article>
+    <div th:if="${loggedIn and card.post.user.email == viewerEmail}" class="story-tools"><a th:href="@{/posts/{id}/edit(id=${card.post.id})}">Edit story</a><form method="post" th:action="@{/posts/{id}/delete(id=${card.post.id})}"><button type="submit">Delete my story</button></form></div>
+    <details th:if="${loggedIn}"><summary>Report story</summary><form method="post" th:action="@{/reports}"><input type="hidden" name="type" value="POST"><input type="hidden" name="id" th:value="${card.post.id}"><label>Reason<textarea name="reason" minlength="10" maxlength="500" required></textarea></label><button type="submit">Submit report</button></form></details>
+    <section class="editor-card comments-section" id="comments"><h2>Comments</h2>
+        <div th:if="${error}" th:text="${error}" class="alert alert-error"></div>
+        <form th:if="${loggedIn}" th:action="@{/posts/{id}/comments(id=${card.post.id})}" method="post">
+            <label for="commentBody">Add a comment</label><textarea id="commentBody" name="body" rows="3" maxlength="1000" required placeholder="Write a thoughtful comment..."></textarea>
+            <button type="submit" class="action-primary">Post comment</button>
+        </form>
+        <p th:unless="${loggedIn}" class="muted"><a th:href="@{/login}">Log in</a> to comment.</p>
+        <div class="comment-list"><article class="comment" th:each="c : ${comments.content}">
+            <a th:href="@{/profile/{id}(id=${c.user.id})}" th:text="${c.user.fullName}">Traveler</a>
+            <time class="muted" th:text="${#temporals.format(c.createdAt,'dd MMM yyyy · HH:mm')}">Date</time>
+            <p th:text="${c.body}">Comment</p>
+            <details th:if="${loggedIn and c.user.email == viewerEmail}"><summary>Edit comment</summary><form method="post" th:action="@{/posts/{postId}/comments/{id}/edit(postId=${card.post.id},id=${c.id})}"><label>Comment<textarea name="body" maxlength="1000" required th:text="${c.body}"></textarea></label><button type="submit">Save comment</button></form></details>
+            <form th:if="${loggedIn and c.user.email == viewerEmail}" method="post" th:action="@{/posts/{postId}/comments/{id}/delete(postId=${card.post.id},id=${c.id})}"><button type="submit">Delete comment</button></form>
+            <details th:if="${loggedIn}"><summary>Report comment</summary><form method="post" th:action="@{/reports}"><input type="hidden" name="type" value="COMMENT"><input type="hidden" name="id" th:value="${c.id}"><label>Reason<textarea name="reason" minlength="10" maxlength="500" required></textarea></label><button type="submit">Submit report</button></form></details>
+        </article></div>
+        <p th:if="${comments.empty}" class="muted">No comments yet.</p>
+        <a class="backlink" th:if="${comments.hasNext()}" th:href="@{/posts/{id}(id=${card.post.id},page=${comments.number+1})}">Older comments →</a>
+    </section>
+</main>
+</body>
+</html>

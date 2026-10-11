@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Feed | Waylo</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/social.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+    <script th:src="@{/js/social.js}" defer></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app">
+<header th:replace="~{fragments/nav :: navbar('feed')}"></header>
+<div class="social-layout">
+    <aside class="social-sidebar" aria-label="Sidebar">
+        <div class="sidebar-heading">COMMUNITY</div>
+        <a class="sidebar-link selected" th:href="@{/feed}"><span>⌂</span> Home feed</a>
+        <a class="sidebar-link" th:href="@{/trips}"><span>⌖</span> Explore trips</a>
+        <a class="sidebar-link" th:if="${loggedIn}" th:href="@{/saved}"><span>▢</span> Saved posts</a>
+        <a class="sidebar-link" th:if="${loggedIn}" th:href="@{/profile}"><span>◯</span> My profile</a>
+        <a class="sidebar-link" th:if="${canManageTrips}" th:href="@{/organizer/trips}"><span>▣</span> My trips</a>
+        <div class="sidebar-foot">Real journeys. Real travelers.<br>© 2026 Waylo</div>
+    </aside>
+    <main class="social-timeline">
+        <div class="timeline-heading">
+            <div><span class="eyebrow">YOUR TRAVEL COMMUNITY</span><h1>Stories worth sharing.</h1>
+                <p>Moments from real journeys, shared by travelers.</p></div>
+        </div>
+        <a class="compose-trigger" th:href="${loggedIn} ? @{/posts/new} : @{/login}">
+            <span class="compose-avatar">+</span>
+            <span>Where did your journey take you?</span><strong>Create post →</strong>
+        </a>
+        <div th:if="${success}" th:text="${success}" class="alert alert-success" role="status"></div>
+        <div th:if="${posts.empty}" class="social-empty"><h2>No stories yet.</h2>
+            <p>Be the first to share a journey with the Waylo community.</p>
+            <a class="action-primary" th:href="${loggedIn} ? @{/posts/new} : @{/login}">Share a story</a>
+        </div>
+        <section class="post-list" aria-label="Travel stories">
+            <article class="feed-post" th:each="card : ${posts.content}">
+                <div class="post-head">
+                    <a class="person-avatar" th:href="@{/profile/{id}(id=${card.post.user.id})}">
+                        <img th:if="${card.post.user.avatarUrl != null}" th:src="${card.post.user.avatarUrl}" alt="" loading="lazy">
+                        <span th:unless="${card.post.user.avatarUrl != null}" th:text="${#strings.substring(card.post.user.fullName,0,1)}">W</span>
+                    </a>
+                    <div class="person-meta"><a th:href="@{/profile/{id}(id=${card.post.user.id})}"
+                        th:text="${card.post.user.fullName}">Traveler</a>
+                        <small><time th:text="${#temporals.format(card.post.createdAt,'dd MMM yyyy · HH:mm')}">Date</time>
+                            <span th:if="${card.post.destination != null}" th:text="' · ' + ${card.post.destination.name}"></span></small>
+                    </div>
+                    <a class="post-more" th:href="@{/posts/{id}(id=${card.post.id})}" aria-label="View post details">⋯</a>
+                </div>
+                <a class="post-photo-link" th:if="${card.post.imageUrl != null}"
+                   th:href="@{/posts/{id}(id=${card.post.id})}">
+                    <img class="post-photo" th:src="${card.post.imageUrl}" alt="Travel photo from this post" loading="lazy">
+                </a>
+                <div class="post-actions">
+                    <form th:if="${loggedIn}" th:action="@{/posts/{id}/like(id=${card.post.id})}" method="post">
+                        <button type="submit" class="icon-action" th:classappend="${card.liked} ? 'active-like' : ''"
+                                th:attr="aria-label=${card.liked ? 'Unlike' : 'Like'}">♥ <span th:text="${card.likeCount}">0</span></button>
+                    </form>
+                    <span class="icon-action static-action" th:unless="${loggedIn}">♡ <span th:text="${card.likeCount}">0</span></span>
+                    <a class="icon-action" th:href="@{/posts/{id}(id=${card.post.id})}">♧ <span th:text="${card.commentCount}">0</span></a>
+                    <button class="icon-action" type="button" data-share-url="" th:attr="data-share-url=@{/posts/{id}(id=${card.post.id})}" aria-label="Share post">↗</button>
+                    <span class="action-space"></span>
+                    <form th:if="${loggedIn}" th:action="@{/posts/{id}/save(id=${card.post.id})}" method="post">
+                        <button type="submit" class="icon-action" th:classappend="${card.saved} ? 'active-save' : ''"
+                                th:text="${card.saved ? '▣' : '▢'}" th:attr="aria-label=${card.saved ? 'Unsave post' : 'Save post'}">▢</button>
+                    </form>
+                </div>
+                <div class="post-body"><p th:text="${card.post.caption}">Caption</p>
+                    <div class="post-tags">
+                        <span class="post-tag" th:if="${card.post.destination != null}" th:text="'⌖ ' + ${card.post.destination.name}"></span>
+                        <a class="post-tag linked" th:if="${card.post.trip != null}"
+                            th:href="@{/trips/{id}(id=${card.post.trip.id})}" th:text="'↗ ' + ${card.post.trip.title}"></a>
+                    </div>
+                    <a class="read-comments" th:href="@{/posts/{id}(id=${card.post.id})}">View comments</a>
+                </div>
+            </article>
+        </section>
+        <nav class="social-pagination" th:if="${posts.totalPages > 1}" aria-label="Feed pagination">
+            <a th:if="${posts.hasPrevious()}" th:href="@{/feed(page=${posts.number - 1})}">← Newer</a>
+            <span th:text="'Page ' + ${posts.number + 1} + ' of ' + ${posts.totalPages}">Page 1</span>
+            <a th:if="${posts.hasNext()}" th:href="@{/feed(page=${posts.number + 1})}">Older →</a>
+        </nav>
+    </main>
+    <aside class="social-aside">
+        <div class="discovery-card"><span class="eyebrow">DISCOVER</span><h2>More than a destination.</h2>
+            <p>Explore upcoming journeys or share a moment from your last one.</p>
+            <a class="action-primary" th:href="@{/trips}">Explore trips →</a>
+        </div>
+        <div class="discovery-card compact"><h3>Travel together</h3><p>Waylo is for genuine stories, conversations, and journeys. No invented reviews or engagement.</p></div>
+    </aside>
+</div>
+</body>
+</html>

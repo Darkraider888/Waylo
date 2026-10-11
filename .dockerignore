@@ -1,0 +1,13 @@
+.git
+.idea
+.env
+.env.*
+!.env.example
+target
+repair-backups
+waylo-uploads
+*.log
+hs_err_pid*
+replay_pid*
+*.jfr
+work

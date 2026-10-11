@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trip editor | Waylo</title>
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/organizer.css}">
+    <link rel="stylesheet" th:href="@{/css/social.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+    <script th:src="@{/js/destinations.js}" defer></script>
+    <script th:src="@{/js/social.js}" defer></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app">
+<header th:replace="~{fragments/nav :: navbar('explore')}"></header>
+<main class="edit-shell organizer-editor">
+    <a th:href="@{/organizer/trips}" class="backlink">← My Trips</a>
+    <span class="eyebrow">TRIP MANAGER</span>
+    <h1 th:text="${tripId == null ? 'Create a new trip' : 'Edit trip draft'}">Create a new trip</h1>
+    <p class="muted">Trips stay private until you publish. You can add a destination without leaving this page.</p>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <form class="editor-card" th:action="${tripId == null} ? @{/organizer/trips} : @{/organizer/trips/{id}/edit(id=${tripId})}"
+          th:object="${tripRequest}" method="post" enctype="multipart/form-data">
+        <h2>Trip details</h2>
+        <label for="title">Trip title</label>
+        <input id="title" th:field="*{title}" type="text" maxlength="200" placeholder="Sreemangal Weekend Escape" required>
+        <div class="form-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+        <label for="description">Itinerary and description</label>
+        <textarea id="description" th:field="*{description}" rows="6" minlength="20" maxlength="5000" required
+                  placeholder="Meeting point, itinerary, transport, what is included and not included..."></textarea>
+        <div class="form-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+        <label for="coverPhoto">Trip cover photo <span class="muted">(optional)</span></label>
+        <img th:if="${coverImageUrl != null}" class="existing-cover" th:src="${coverImageUrl}" alt="Current trip cover">
+        <input type="file" id="coverPhoto" name="coverPhoto" accept="image/jpeg,image/png" data-photo-input>
+        <div class="upload-preview" data-photo-preview hidden><img data-photo-preview-image alt="Selected cover preview"></div>
+        <p class="muted tiny">JPEG/PNG, up to 6 MB. Public trip covers are delivered through Cloudinary.</p>
+        <div class="form-grid">
+            <div><label for="departureDate">Departure date & time (Bangladesh)</label>
+                <input id="departureDate" type="datetime-local" th:field="*{departureDate}" required>
+                <div class="form-error" th:if="${#fields.hasErrors('departureDate')}" th:errors="*{departureDate}"></div>
+            </div>
+            <div><label for="capacity">Seat capacity</label>
+                <input id="capacity" type="number" th:field="*{capacity}" min="1" max="1000" required>
+                <div class="form-error" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></div>
+            </div>
+        </div>
+        <label for="price">Price per traveler (BDT)</label>
+        <input id="price" type="number" th:field="*{price}" min="0" max="99999999.99" step="0.01" required>
+        <div class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+
+        <div id="destination-picker" th:attr="data-maps-key=${mapsEmbedKey}">
+            <label for="destinationSearch">Find a destination</label>
+            <input id="destinationSearch" type="search" autocomplete="off"
+                   placeholder="Search by place, district or country" aria-controls="destinationId">
+            <label for="destinationId">Select destination</label>
+            <select id="destinationId" th:field="*{destinationId}" required>
+                <option value="">Choose a destination</option>
+                <option th:each="destination : ${destinations}" th:value="${destination.id}"
+                        th:text="${destination.name + ' — ' + (destination.district != null ? destination.district : destination.location) + (destination.country != null ? ', ' + destination.country : '')}"
+                        th:attr="data-name=${destination.name},data-district=${destination.district},data-country=${destination.country},data-lat=${destination.latitude},data-lng=${destination.longitude}">Location</option>
+            </select>
+            <div class="form-error" th:if="${#fields.hasErrors('destinationId')}" th:errors="*{destinationId}"></div>
+            <div class="map-panel"><div class="map-placeholder" id="mapPreview">Choose a destination to view its location.</div>
+                <a id="openGoogleMaps" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Open in Google Maps ↗</a></div>
+        </div>
+        <button type="button" th:if="${canCreateTrips}" id="showNewDestination" class="outline-button">+ Add destination without leaving this form</button>
+        <section id="inlineDestination" th:if="${canCreateTrips}" class="inline-destination" hidden>
+            <h3>New destination</h3><p class="muted tiny">This becomes available to other trip managers.</p>
+            <label for="newPlaceName">Name</label><input id="newPlaceName" maxlength="150" placeholder="Lawachara National Park">
+            <div class="form-grid">
+                <div><label for="newDistrict">District / region</label><input id="newDistrict" maxlength="120" placeholder="Moulvibazar"></div>
+                <div><label for="newCountry">Country</label><input id="newCountry" maxlength="120" value="Bangladesh"></div>
+            </div>
+            <label for="newDescription">Destination description</label><textarea id="newDescription" rows="3" maxlength="3000"></textarea>
+            <div class="form-grid">
+                <div><label for="newLatitude">Latitude (optional)</label><input type="number" id="newLatitude" min="-90" max="90" step="0.0000001"></div>
+                <div><label for="newLongitude">Longitude (optional)</label><input type="number" id="newLongitude" min="-180" max="180" step="0.0000001"></div>
+            </div>
+            <p class="form-error" id="destinationError" role="alert"></p>
+            <button type="button" class="action-primary" id="addDestinationButton">Add and select destination</button>
+        </section>
+        <button type="submit" class="action-primary full-button" th:text="${tripId == null ? 'Save trip draft →' : 'Save draft changes →'}">Save</button>
+    </form>
+</main>
+</body>
+</html>

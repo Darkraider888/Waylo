@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Create Account | Waylo</title>
+
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <script th:src="@{/js/password.js}" defer></script>
+<link rel="stylesheet" href="/css/theme.css">
+<script src="/js/theme.js"></script>
+<link rel="stylesheet" href="/css/travel-auth.css">
+<script src="/js/travel-auth.js" defer></script>
+<link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="entry-page">
+
+<header class="navbar">
+    <a th:href="@{/}" class="logo" aria-label="Waylo home">
+        <span class="logo-text">waylo</span>
+        <span class="logo-dots">...</span>
+    </a>
+
+    <nav class="nav-actions"><button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch theme" aria-pressed="false"><span data-theme-icon aria-hidden="true">☾</span> <span data-theme-label>Dark mode</span></button>
+        <a th:href="@{/login}" class="nav-link">Log in</a>
+        <a th:href="@{/trips}" class="explore-btn">
+            Explore Trips &rarr;
+        </a>
+    </nav>
+</header>
+
+<div class="entry-layout">
+<aside class="destination-stage" data-current="coxs-bazar" aria-label="Bangladesh travel destinations">
+ <div class="travel-intro"><span class="travel-kicker">YOUR NEXT CHAPTER STARTS HERE</span><h2>Join a community<br>that loves to travel.</h2><p>Discover places. Meet your people.<br>Make memories worth sharing.</p></div>
+ <div class="destination-bottom"><p class="destination-label" aria-live="polite">Cox’s Bazar · Bangladesh</p><div class="destination-cards" aria-label="Choose a destination photo"><button type="button" class="place-card" data-place="sreemangal" aria-pressed="false"><img src="/images/sreemangal.jpg" alt="Sreemangal" loading="lazy"><span class="place-caption"><strong>Sreemangal</strong><small>Tea gardens & quiet mornings</small></span></button><button type="button" class="place-card" data-place="chattogram" aria-pressed="false"><img src="/images/chattogram.jpg" alt="Chattogram" loading="lazy"><span class="place-caption"><strong>Chattogram</strong><small>City views & coastal journeys</small></span></button><button type="button" class="place-card" data-place="coxs-bazar" aria-pressed="true"><img src="/images/coxs-bazar.jpg" alt="Cox’s Bazar" loading="lazy"><span class="place-caption"><strong>Cox’s Bazar</strong><small>Waves, sunsets & sea air</small></span></button></div>
+ <details class="photo-credits"><summary>Photo credits</summary><p>Photos via Wikimedia Commons, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Displayed with layout cropping; original files unchanged.</p><ul>
+ <li><a href="https://commons.wikimedia.org/wiki/File:Tea_Garden,_In_Srimongol,_Bangladesh.jpg">Sreemangal — George achik</a></li>
+ <li><a href="https://commons.wikimedia.org/wiki/File:Chittagong_City.JPG">Chattogram — Angshuman roy</a></li>
+ <li><a href="https://commons.wikimedia.org/wiki/File:Cox%27s_Bazar_Sea_Beach_Sunset.jpg">Cox’s Bazar — Prashun12</a></li></ul></details></div></aside>
+<main class="auth-container">
+
+    <div class="auth-heading">
+        <span class="eyebrow">Join the journey</span>
+        <h1>Start exploring.</h1>
+        <p>Discover places, reserve adventures and connect with travelers.</p>
+    </div>
+
+    <div class="auth-card">
+
+        <div th:if="${registrationError}"
+             th:text="${registrationError}"
+             class="alert alert-error"></div>
+
+        <form th:action="@{/register}"
+              th:object="${registerRequest}"
+              method="post">
+
+            <div class="form-group">
+                <label for="fullName">Full name</label>
+                <input id="fullName"
+                       type="text"
+                       th:field="*{fullName}"
+                       maxlength="100"
+                       placeholder="Your full name"
+                       autocomplete="name"
+                       required>
+
+                <div class="form-error"
+                     th:if="${#fields.hasErrors('fullName')}"
+                     th:errors="*{fullName}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input id="email"
+                       type="email"
+                       th:field="*{email}"
+                       maxlength="150"
+                       placeholder="you@example.com"
+                       autocomplete="email"
+                       required>
+
+                <div class="form-error"
+                     th:if="${#fields.hasErrors('email')}"
+                     th:errors="*{email}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <div class="password-wrapper">
+                    <input id="password"
+                           name="password"
+                           type="password"
+                           minlength="8"
+                           maxlength="72"
+                           placeholder="Create a strong password"
+                           autocomplete="new-password"
+                           required>
+
+                    <button type="button"
+                            class="password-toggle"
+                            data-password-toggle="password"
+                            aria-label="Show or hide password"
+                            aria-pressed="false">
+                        Show
+                    </button>
+                </div>
+
+                <p class="password-hint">
+                    At least 8 characters with uppercase,
+                    lowercase and a number.
+                </p>
+
+                <div class="form-error"
+                     th:if="${#fields.hasErrors('password')}"
+                     th:errors="*{password}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm password</label>
+
+                <div class="password-wrapper">
+                    <input id="confirmPassword"
+                           name="confirmPassword"
+                           type="password"
+                           placeholder="Repeat your password"
+                           autocomplete="new-password"
+                           required>
+
+                    <button type="button"
+                            class="password-toggle"
+                            data-password-toggle="confirmPassword"
+                            aria-label="Show or hide confirmation password"
+                            aria-pressed="false">
+                        Show
+                    </button>
+                </div>
+
+                <div class="form-error"
+                     th:if="${#fields.hasErrors('confirmPassword')}"
+                     th:errors="*{confirmPassword}"></div>
+            </div>
+
+            <button type="submit" class="btn">
+                Create Account &rarr;
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account?
+            <a th:href="@{/login}">Log in</a>
+        </div>
+
+        <a th:href="@{/trips}" class="secondary-action">
+            Explore Waylo without registering &rarr;
+        </a>
+    </div>
+</main></div>
+<footer class="entry-footer">© <span th:text="${#temporals.year(#temporals.createNow())}">2026</span> Waylo</footer>
+
+</body>
+</html>

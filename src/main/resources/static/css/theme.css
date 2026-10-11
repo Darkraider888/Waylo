@@ -1,0 +1,217 @@
+/* WAYLO SHARED THEME */
+
+:root {
+    color-scheme: light;
+
+    --background: #f7f9f8;
+    --surface: #ffffff;
+    --text: #17241e;
+    --muted: #52685b;
+    --border: #cbd8d0;
+    --field: #ffffff;
+    --placeholder: #64776d;
+
+    --green: #168c78;
+    --green-dark: #106e5e;
+    --green-light: #e6f4ed;
+
+    --error: #af261a;
+    --error-bg: #fff0ef;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --background: #101916;
+    --surface: #192620;
+    --text: #eff7f1;
+    --muted: #b8cabf;
+    --border: #4b6255;
+    --field: #203229;
+    --placeholder: #b0c1b6;
+
+    --green: #73e2c0;
+    --green-dark: #4bbd9c;
+    --green-light: #264a3b;
+
+    --error: #ffb2ad;
+    --error-bg: #512f2d;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+}
+
+.navbar,
+.auth-card,
+.organizer-card,
+.organizer-form,
+.empty-state,
+.panel {
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+.logo-text,
+h1,
+h2,
+h3,
+.form-group label {
+    color: var(--text);
+}
+
+.field-help {
+    color: var(--muted);
+}
+
+/* INPUTS AND DROPDOWNS */
+
+input,
+textarea,
+select,
+.form-group input,
+.form-group textarea,
+.form-group select {
+    background: var(--field);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    accent-color: var(--green);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--placeholder);
+    opacity: 1;
+}
+
+select option,
+select optgroup {
+    background: var(--field);
+    color: var(--text);
+}
+
+select option:checked {
+    background: var(--green);
+    color: #ffffff;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--green);
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 3px rgba(22, 140, 120, .18);
+}
+
+/* VALIDATION */
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+    border-color: var(--error);
+}
+
+input[aria-invalid="true"]:focus,
+textarea[aria-invalid="true"]:focus,
+select[aria-invalid="true"]:focus {
+    outline-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(175, 38, 26, .16);
+}
+
+.form-error,
+.manager-error {
+    color: var(--error);
+}
+
+.alert-error {
+    background: var(--error-bg);
+    color: var(--error);
+}
+
+.alert-success,
+.notice,
+.status-pill {
+    background: var(--green-light);
+    color: var(--text);
+}
+
+/* BUTTONS */
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btn,
+.explore-btn {
+    background: #168c78;
+    color: #ffffff;
+}
+
+.btn:hover,
+.explore-btn:hover {
+    background: #106e5e;
+}
+
+:focus-visible {
+    outline: 3px solid var(--green);
+    outline-offset: 3px;
+}
+
+.nav-actions {
+    flex-wrap: wrap;
+}
+/* Explore trip card contrast fix */
+
+.trip-card {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.trip-card h2,
+.trip-card p,
+.trip-card span,
+.trip-card strong {
+    color: var(--text);
+}
+
+.trip-card .destination,
+.trip-card .price {
+    color: var(--green);
+}
+
+.trip-card .btn {
+    color: #ffffff;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+}
+/* Unified typography for Waylo 2026: keep the logo styling intact. */
+body { font-family: 'DM Sans', 'Nunito Sans', 'Segoe UI', sans-serif; }

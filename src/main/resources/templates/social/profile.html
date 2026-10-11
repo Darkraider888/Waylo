@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Traveler profile | Waylo</title><link rel="stylesheet" th:href="@{/css/auth.css}">
+<link rel="stylesheet" th:href="@{/css/theme.css}"><link rel="stylesheet" th:href="@{/css/social.css}">
+<script th:src="@{/js/theme.js}" defer></script><script th:src="@{/js/social.js}" defer></script><link rel="stylesheet" th:href="@{/css/app.css}"><script th:src="@{/js/app.js}" defer></script></head>
+<body class="social-app"><header th:replace="~{fragments/nav :: navbar('profile')}"></header>
+<main class="profile-layout">
+    <section class="profile-hero">
+        <div class="profile-picture"><img th:if="${profileUser.avatarUrl != null}" th:src="${profileUser.avatarUrl}" alt="Profile photograph">
+            <span th:unless="${profileUser.avatarUrl != null}" th:text="${#strings.substring(profileUser.fullName,0,1)}">W</span></div>
+        <div class="profile-summary"><span class="eyebrow">WAYLO TRAVELER</span>
+            <h1 th:text="${profileUser.fullName}">Traveler</h1>
+            <p th:if="${profileUser.profileLocation != null}" class="muted" th:text="'⌖ ' + ${profileUser.profileLocation}"></p>
+            <p th:if="${profileUser.bio != null}" class="profile-bio" th:text="${profileUser.bio}"></p>
+            <div class="profile-stats"><span><b th:text="${postCount}">0</b> posts</span>
+                <span><b th:text="${followers}">0</b> followers</span><span><b th:text="${following}">0</b> following</span></div>
+            <div class="profile-controls">
+                <a th:if="${owner}" class="action-primary" th:href="@{/profile/edit}">Edit profile</a>
+                <a th:if="${owner}" class="outline-button" th:href="@{/saved}">Saved posts</a>
+                <form th:if="${loggedIn and !owner}" th:action="@{/profile/{id}/follow(id=${profileUser.id})}" method="post">
+                    <button type="submit" class="action-primary" th:text="${isFollowing ? 'Following ✓' : 'Follow'}">Follow</button>
+                </form>
+                <a th:if="${!loggedIn}" class="outline-button" th:href="@{/login}">Log in to follow</a>
+            </div>
+        </div>
+    </section>
+    <div class="profile-feed-heading"><h2>Stories & memories</h2><a th:if="${owner}" th:href="@{/posts/new}">+ Share a story</a></div>
+    <section class="profile-post-grid" aria-label="Public posts">
+        <article class="profile-post" th:each="card : ${posts.content}">
+            <a th:href="@{/posts/{id}(id=${card.post.id})}">
+                <img th:if="${card.post.imageUrl != null}" th:src="${card.post.imageUrl}" alt="Travel photo" loading="lazy">
+                <div class="text-post-cover" th:unless="${card.post.imageUrl != null}">✦</div>
+                <div class="profile-post-caption"><span th:text="${card.post.caption}">Story</span>
+                    <small th:text="${card.likeCount} + ' likes · ' + ${card.commentCount} + ' comments'"></small></div>
+            </a>
+        </article>
+    </section>
+    <div th:if="${posts.empty}" class="social-empty"><h2>No travel stories yet.</h2>
+        <p>When this traveler shares a public journey, it will appear here.</p></div>
+    <nav class="social-pagination" th:if="${posts.totalPages > 1}">
+        <a th:if="${posts.hasPrevious()}" th:href="@{/profile/{id}(id=${profileUser.id},page=${posts.number-1})}">← Newer</a>
+        <span th:text="'Page ' + ${posts.number+1} + ' / ' + ${posts.totalPages}"></span>
+        <a th:if="${posts.hasNext()}" th:href="@{/profile/{id}(id=${profileUser.id},page=${posts.number+1})}">Older →</a>
+    </nav>
+</main></body></html>

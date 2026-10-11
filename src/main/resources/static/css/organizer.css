@@ -1,0 +1,260 @@
+/* WAYLO ORGANIZER PAGES */
+
+.organizer-page {
+    max-width: 1120px;
+    margin: 40px auto;
+    padding: 0 24px 70px;
+}
+
+.page-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.organizer-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+    );
+    gap: 24px;
+}
+
+.organizer-card,
+.organizer-form,
+.empty-state {
+    padding: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.organizer-card h2 {
+    overflow-wrap: anywhere;
+}
+
+.trip-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: var(--green-light);
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.trip-description {
+    max-height: 150px;
+    overflow: auto;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+    color: var(--muted);
+}
+
+.trip-actions {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 22px;
+}
+
+.trip-actions form,
+.nav-actions form {
+    margin: 0;
+}
+
+/* ORGANIZER FORMS */
+
+.organizer-form {
+    max-width: 750px;
+    margin-bottom: 25px;
+}
+
+.organizer-form input,
+.organizer-form select,
+.organizer-form textarea {
+    display: block;
+    width: 100%;
+    padding: 13px 14px;
+    font: inherit;
+    background: var(--field);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.organizer-form input::placeholder,
+.organizer-form textarea::placeholder {
+    color: var(--placeholder);
+    opacity: 1;
+}
+
+.organizer-form select option {
+    background: var(--field);
+    color: var(--text);
+}
+
+.organizer-form input:focus,
+.organizer-form select:focus,
+.organizer-form textarea:focus {
+    border-color: var(--green);
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 3px rgba(22, 140, 120, .18);
+}
+
+.organizer-form input[aria-invalid="true"],
+.organizer-form select[aria-invalid="true"],
+.organizer-form textarea[aria-invalid="true"] {
+    border-color: var(--error);
+}
+
+.organizer-form textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.organizer-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 700;
+}
+
+.organizer-form .form-group {
+    margin-bottom: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.field-help {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* GOOGLE MAPS */
+
+.map-panel {
+    margin: 15px 0;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.map-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    padding: 12px;
+    overflow: hidden;
+    border-radius: 9px;
+    background: var(--background);
+    color: var(--muted);
+    text-align: center;
+}
+
+.map-placeholder iframe {
+    width: 100%;
+    height: 250px;
+    border: 0;
+}
+
+.map-panel a {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--green);
+    font-weight: 800;
+}
+
+/* ADMIN DESTINATION MANAGEMENT */
+
+.destination-admin-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.destination-admin-row p {
+    margin: 4px 0;
+    color: var(--muted);
+}
+
+.destination-admin-row form {
+    flex-shrink: 0;
+}
+
+/* NAVIGATION */
+
+.navbar {
+    height: auto;
+    min-height: 82px;
+    padding: 18px 5%;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.nav-actions {
+    gap: 16px;
+}
+
+/* EMPTY STATE */
+
+.empty-state {
+    padding: 60px 24px;
+    text-align: center;
+}
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+    .page-title {
+        display: block;
+    }
+
+    .organizer-card,
+    .organizer-form {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .organizer-page {
+        padding: 0 14px 40px;
+    }
+
+    .destination-admin-row {
+        align-items: flex-start;
+    }
+}
+/* Trip editor destination panel, scoped to the inline editor */
+.organizer-editor .editor-card { max-width: none; }
+.organizer-editor .editor-card h2 { color: var(--text); font-size: 21px; margin: 5px 0; }
+.organizer-editor .inline-destination { padding: 20px; margin-top: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--background); }
+.organizer-editor .inline-destination[hidden] { display: none; }
+.organizer-editor .inline-destination h3 { margin: 0 0 6px; color: var(--text); }
+.organizer-editor .form-grid > div { min-width: 0; }
+.organizer-editor .form-grid > div input { width: 100%; }
+.organizer-editor .map-panel { border: 1px solid var(--border); margin: 14px 0; }
+.organizer-editor .map-placeholder { min-height: 130px; background: var(--background); color: var(--muted); }
+.organizer-editor .map-placeholder iframe { width: 100%; min-height: 270px; border: 0; }
+.organizer-editor .existing-cover { width: 100%; max-height: 230px; border-radius: 9px; object-fit: cover; }
+.organizer-editor .editor-card select option { background: var(--field); color: var(--text); }
+.organizer-editor input:focus,.organizer-editor select:focus,.organizer-editor textarea:focus { outline: 2px solid #168c78; }
+@media (max-width: 640px) { .organizer-editor .form-grid { grid-template-columns: 1fr; } }
+.social-app .publish-form { margin-top: 14px; }
+.social-app .publish-form button { cursor: pointer; width: 100%; }
