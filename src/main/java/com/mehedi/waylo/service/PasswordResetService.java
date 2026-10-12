@@ -31,7 +31,9 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ResendEmailSender emailSender;
+    private final ResendEmailSender resendEmailSender;
+    private final BrevoEmailSender brevoEmailSender;
+    private final String emailProvider;
 
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -42,12 +44,19 @@ public class PasswordResetService {
             UserRepository userRepository,
             PasswordResetTokenRepository tokenRepository,
             PasswordEncoder passwordEncoder,
-            ResendEmailSender emailSender) {
+            ResendEmailSender resendEmailSender,
+            BrevoEmailSender brevoEmailSender,
+            @Value("${WAYLO_PASSWORD_RESET_PROVIDER:resend}") String emailProvider) {
 
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailSender = emailSender;
+        this.resendEmailSender = resendEmailSender;
+        this.brevoEmailSender = brevoEmailSender;
+        this.emailProvider = emailProvider.trim().toLowerCase(Locale.ROOT);
+        if (!this.emailProvider.equals("resend") && !this.emailProvider.equals("brevo")) {
+            throw new IllegalArgumentException("Unsupported password-reset email provider");
+        }
     }
 
     // =====================================================
@@ -144,12 +153,15 @@ public class PasswordResetService {
                         + "/reset-password?token="
                         + rawToken;
 
-        emailSender.sendPasswordReset(
-                user.getEmail(),
-                user.getFullName(),
-                resetLink,
-                TOKEN_VALIDITY_MINUTES
-        );
+        // Keep Resend as the safe default; select Brevo in Render only after
+        // configuring and verifying its sender. Never send twice automatically.
+        if ("brevo".equals(emailProvider)) {
+            brevoEmailSender.sendPasswordReset(
+                    user.getEmail(), user.getFullName(), resetLink, TOKEN_VALIDITY_MINUTES);
+        } else {
+            resendEmailSender.sendPasswordReset(
+                    user.getEmail(), user.getFullName(), resetLink, TOKEN_VALIDITY_MINUTES);
+        }
     }
 
     // =====================================================
