@@ -38,6 +38,7 @@
 
             <p>
                 Review Trip Manager applications,
+                manage trip-specific proposals,
                 manage destinations, and oversee the platform.
             </p>
 
@@ -113,16 +114,41 @@
     </nav>
 
     <!-- ADMIN STATISTICS -->
+    <!-- FIX: Count both application types -->
 
     <div class="admin-stats">
 
+        <!-- TOTAL PENDING REVIEWS -->
+
         <div>
-            <span>Pending applications</span>
+            <span>Total pending reviews</span>
+
+            <b th:text="${#lists.size(applications) + #lists.size(tripProposals)}">
+                0
+            </b>
+        </div>
+
+        <!-- TRIP MANAGER APPLICATIONS -->
+
+        <div>
+            <span>Trip Manager applications</span>
 
             <b th:text="${#lists.size(applications)}">
                 0
             </b>
         </div>
+
+        <!-- TRIP-SPECIFIC ORGANIZER PROPOSALS -->
+
+        <div>
+            <span>Trip-specific proposals</span>
+
+            <b th:text="${#lists.size(tripProposals)}">
+                0
+            </b>
+        </div>
+
+        <!-- VERIFICATION METHOD -->
 
         <div>
             <span>Verification method</span>
@@ -161,8 +187,7 @@
         <div class="admin-empty"
              th:if="${#lists.isEmpty(applications)}">
 
-            No pending applications.
-            You're all caught up.
+            No pending Trip Manager applications.
 
         </div>
 
