@@ -6,8 +6,6 @@ import com.mehedi.waylo.repository.PasswordResetTokenRepository;
 import com.mehedi.waylo.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,26 +31,23 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
+    private final ResendEmailSender emailSender;
 
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Value("${waylo.public-url}")
     private String publicUrl;
 
-    @Value("${spring.mail.username}")
-    private String mailFrom;
-
     public PasswordResetService(
             UserRepository userRepository,
             PasswordResetTokenRepository tokenRepository,
             PasswordEncoder passwordEncoder,
-            JavaMailSender mailSender) {
+            ResendEmailSender emailSender) {
 
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
+        this.emailSender = emailSender;
     }
 
     // =====================================================
@@ -149,31 +144,12 @@ public class PasswordResetService {
                         + "/reset-password?token="
                         + rawToken;
 
-        SimpleMailMessage message =
-                new SimpleMailMessage();
-
-        message.setFrom(mailFrom);
-        message.setTo(user.getEmail());
-
-        message.setSubject(
-                "Waylo - Reset Your Password"
+        emailSender.sendPasswordReset(
+                user.getEmail(),
+                user.getFullName(),
+                resetLink,
+                TOKEN_VALIDITY_MINUTES
         );
-
-        message.setText(
-                "Hello " + user.getFullName() + ",\n\n"
-                        + "We received a request to reset your "
-                        + "Waylo account password.\n\n"
-                        + "Click the link below to create a new password:\n\n"
-                        + resetLink + "\n\n"
-                        + "This link will expire in "
-                        + TOKEN_VALIDITY_MINUTES
-                        + " minutes and can only be used once.\n\n"
-                        + "If you did not request this change, "
-                        + "you can ignore this email.\n\n"
-                        + "Waylo - Explore. Connect. Go."
-        );
-
-        mailSender.send(message);
     }
 
     // =====================================================

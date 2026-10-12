@@ -7,7 +7,6 @@ import com.mehedi.waylo.service.MediaStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -70,7 +69,7 @@ class WayloApplicationTests {
 
     @MockitoBean MediaStorageService media;
     @MockitoBean SandboxPaymentGateway payments;
-    @MockitoBean JavaMailSender mail;
+    @MockitoBean ResendEmailSender mail;
     @Autowired JdbcTemplate jdbc;
     @Autowired org.springframework.test.web.servlet.MockMvc mvc;
     @Autowired UserRepository users;
@@ -237,9 +236,9 @@ class WayloApplicationTests {
         mvc.perform(post("/login").with(csrf()).param("email",request.getEmail()).param("password",request.getPassword()))
                 .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/feed"));
         resetService.requestReset(request.getEmail());
-        var captor=org.mockito.ArgumentCaptor.forClass(org.springframework.mail.SimpleMailMessage.class);
-        verify(mail).send(captor.capture());
-        var matcher=java.util.regex.Pattern.compile("token=([A-Za-z0-9_-]{43})").matcher(captor.getValue().getText());
+        var captor=org.mockito.ArgumentCaptor.forClass(String.class);
+        verify(mail).sendPasswordReset(eq(member.getEmail()), eq(member.getFullName()), captor.capture(), eq(15));
+        var matcher=java.util.regex.Pattern.compile("token=([A-Za-z0-9_-]{43})").matcher(captor.getValue());
         assertTrue(matcher.find());String token=matcher.group(1);
         assertTrue(resetService.isTokenValid(token));resetService.resetPassword(token,"ChangedPassword123");
         assertFalse(resetService.isTokenValid(token));

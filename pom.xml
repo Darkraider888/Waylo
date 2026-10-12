@@ -42,10 +42,6 @@
             <version>2.5.0</version>
         </dependency>
         <!-- Authentication and authorization -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
         <!-- Stateless JWT API (browser keeps session authentication) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
